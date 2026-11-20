@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "alert",
+  "type": "registry:ui",
+  "title": "Alert",
+  "dependencies": [
+    "class-variance-authority"
+  ],
+  "registryDependencies": [
+    "https://dendense.github.io/dens-ui/r/utils.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/alert.tsx",
+      "type": "registry:ui",
+      "content": "import * as React from \"react\"\nimport { cva, type VariantProps } from \"class-variance-authority\"\n\nimport { cn } from \"@/lib/utils\"\n\nconst alertVariants = cva(\n  \"relative grid w-full grid-cols-[0_1fr] items-start gap-y-1 rounded-xl px-4 py-3.5 text-sm has-[>svg]:grid-cols-[calc(var(--spacing)*4.5)_1fr] has-[>svg]:gap-x-3 [&>svg]:size-[18px] [&>svg]:translate-y-px\",\n  {\n    variants: {\n      variant: {\n        default: \"bg-card text-card-foreground ring-1 ring-border [&>svg]:text-primary\",\n        soft: \"bg-soft text-soft-foreground\",\n        highlight:\n          \"bg-highlight/12 text-foreground ring-1 ring-highlight/35 [&>svg]:text-highlight dark:bg-highlight/10\",\n        warning: \"bg-warning text-warning-foreground\",\n        destructive:\n          \"bg-destructive/8 text-destructive ring-1 ring-destructive/25 dark:bg-destructive/12 [&>[data-slot=alert-description]]:text-destructive/90\",\n      },\n    },\n    defaultVariants: { variant: \"default\" },\n  }\n)\n\nfunction Alert({ className, variant, ...props }: React.ComponentProps<\"div\"> & VariantProps<typeof alertVariants>) {\n  return <div data-slot=\"alert\" role=\"alert\" className={cn(alertVariants({ variant }), className)} {...props} />\n}\n\nfunction AlertTitle({ className, ...props }: React.ComponentProps<\"div\">) {\n  return <div data-slot=\"alert-title\" className={cn(\"col-start-2 font-semibold leading-snug\", className)} {...props} />\n}\n\nfunction AlertDescription({ className, ...props }: React.ComponentProps<\"div\">) {\n  return (\n    <div\n      data-slot=\"alert-description\"\n      className={cn(\"col-start-2 grid justify-items-start gap-1 leading-relaxed opacity-90\", className)}\n      {...props}\n    />\n  )\n}\n\nexport { Alert, AlertTitle, AlertDescription }\n"
+    }
+  ]
+}

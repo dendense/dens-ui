@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "input",
+  "type": "registry:ui",
+  "title": "Input",
+  "dependencies": [],
+  "registryDependencies": [
+    "https://dendense.github.io/dens-ui/r/utils.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/input.tsx",
+      "type": "registry:ui",
+      "content": "import * as React from \"react\"\n\nimport { cn } from \"@/lib/utils\"\n\nconst fieldBase =\n  \"w-full min-w-0 rounded-lg border border-input bg-card text-sm text-foreground shadow-[inset_0_1px_2px_rgb(15_23_22/0.04)] transition-[border-color,box-shadow] outline-none placeholder:text-muted-foreground/90 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/20 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/15\"\n\nfunction Input({ className, type, ...props }: React.ComponentProps<\"input\">) {\n  return (\n    <input\n      type={type}\n      data-slot=\"input\"\n      className={cn(\n        fieldBase,\n        \"h-10 px-3.5 py-2 file:mr-3 file:border-0 file:bg-transparent file:text-sm file:font-semibold file:text-foreground\",\n        className\n      )}\n      {...props}\n    />\n  )\n}\n\n/**\n * Input with a leading icon and/or trailing element (e.g. a Kbd hint).\n * <InputGroup start={<Search />} end={<Kbd>⌘K</Kbd>}><Input … /></InputGroup>\n */\nfunction InputGroup({\n  className,\n  start,\n  end,\n  children,\n  ...props\n}: React.ComponentProps<\"div\"> & { start?: React.ReactNode; end?: React.ReactNode }) {\n  return (\n    <div\n      data-slot=\"input-group\"\n      className={cn(\n        \"relative flex items-center [&>input]:flex-1\",\n        start && \"[&>input]:pl-10\",\n        end && \"[&>input]:pr-14\",\n        className\n      )}\n      {...props}\n    >\n      {start && (\n        <span className=\"pointer-events-none absolute left-3.5 flex text-muted-foreground [&>svg]:size-4\">\n          {start}\n        </span>\n      )}\n      {children}\n      {end && <span className=\"absolute right-2.5 flex items-center\">{end}</span>}\n    </div>\n  )\n}\n\nexport { Input, InputGroup, fieldBase }\n"
+    }
+  ]
+}

@@ -1,0 +1,254 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "dens-ui",
+  "homepage": "https://dendense.github.io/dens-ui",
+  "items": [
+    {
+      "name": "theme",
+      "type": "registry:file",
+      "title": "Dens-UI theme"
+    },
+    {
+      "name": "utils",
+      "type": "registry:lib"
+    },
+    {
+      "name": "alert",
+      "type": "registry:ui",
+      "title": "Alert",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "avatar",
+      "type": "registry:ui",
+      "title": "Avatar",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "badge",
+      "type": "registry:ui",
+      "title": "Badge",
+      "dependencies": [
+        "radix-ui",
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "button",
+      "type": "registry:ui",
+      "title": "Button",
+      "dependencies": [
+        "radix-ui",
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "title": "Card",
+      "dependencies": [],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "checkbox",
+      "type": "registry:ui",
+      "title": "Checkbox",
+      "dependencies": [
+        "radix-ui",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "dialog",
+      "type": "registry:ui",
+      "title": "Dialog",
+      "dependencies": [
+        "radix-ui",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "dropdown-menu",
+      "type": "registry:ui",
+      "title": "Dropdown Menu",
+      "dependencies": [
+        "radix-ui",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "input",
+      "type": "registry:ui",
+      "title": "Input",
+      "dependencies": [],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "kbd",
+      "type": "registry:ui",
+      "title": "Kbd",
+      "dependencies": [],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "label",
+      "type": "registry:ui",
+      "title": "Label",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "progress",
+      "type": "registry:ui",
+      "title": "Progress",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "radio-group",
+      "type": "registry:ui",
+      "title": "Radio Group",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "select",
+      "type": "registry:ui",
+      "title": "Select",
+      "dependencies": [
+        "radix-ui",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "separator",
+      "type": "registry:ui",
+      "title": "Separator",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "sidebar",
+      "type": "registry:ui",
+      "title": "Sidebar",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "title": "Skeleton",
+      "dependencies": [],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "switch",
+      "type": "registry:ui",
+      "title": "Switch",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "table",
+      "type": "registry:ui",
+      "title": "Table",
+      "dependencies": [],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "tabs",
+      "type": "registry:ui",
+      "title": "Tabs",
+      "dependencies": [
+        "radix-ui",
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "textarea",
+      "type": "registry:ui",
+      "title": "Textarea",
+      "dependencies": [],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json",
+        "https://dendense.github.io/dens-ui/r/input.json"
+      ]
+    },
+    {
+      "name": "tooltip",
+      "type": "registry:ui",
+      "title": "Tooltip",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    }
+  ]
+}

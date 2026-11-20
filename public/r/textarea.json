@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "textarea",
+  "type": "registry:ui",
+  "title": "Textarea",
+  "dependencies": [],
+  "registryDependencies": [
+    "https://dendense.github.io/dens-ui/r/utils.json",
+    "https://dendense.github.io/dens-ui/r/input.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/textarea.tsx",
+      "type": "registry:ui",
+      "content": "import * as React from \"react\"\n\nimport { cn } from \"@/lib/utils\"\nimport { fieldBase } from \"@/components/ui/input\"\n\nfunction Textarea({ className, ...props }: React.ComponentProps<\"textarea\">) {\n  return (\n    <textarea\n      data-slot=\"textarea\"\n      className={cn(fieldBase, \"field-sizing-content min-h-24 px-3.5 py-2.5 leading-relaxed\", className)}\n      {...props}\n    />\n  )\n}\n\nexport { Textarea }\n"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "kbd",
+  "type": "registry:ui",
+  "title": "Kbd",
+  "dependencies": [],
+  "registryDependencies": [
+    "https://dendense.github.io/dens-ui/r/utils.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/kbd.tsx",
+      "type": "registry:ui",
+      "content": "import * as React from \"react\"\n\nimport { cn } from \"@/lib/utils\"\n\nfunction Kbd({ className, ...props }: React.ComponentProps<\"kbd\">) {\n  return (\n    <kbd\n      data-slot=\"kbd\"\n      className={cn(\n        \"inline-flex h-6 min-w-6 select-none items-center justify-center gap-0.5 rounded-md border border-border bg-surface px-1.5 font-mono text-[11px] font-medium text-muted-foreground shadow-[0_1px_0_var(--border)]\",\n        className\n      )}\n      {...props}\n    />\n  )\n}\n\nexport { Kbd }\n"
+    }
+  ]
+}

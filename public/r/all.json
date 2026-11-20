@@ -1,0 +1,32 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "all",
+  "type": "registry:block",
+  "title": "Everything in Dens-UI",
+  "registryDependencies": [
+    "https://dendense.github.io/dens-ui/r/theme.json",
+    "https://dendense.github.io/dens-ui/r/alert.json",
+    "https://dendense.github.io/dens-ui/r/avatar.json",
+    "https://dendense.github.io/dens-ui/r/badge.json",
+    "https://dendense.github.io/dens-ui/r/button.json",
+    "https://dendense.github.io/dens-ui/r/card.json",
+    "https://dendense.github.io/dens-ui/r/checkbox.json",
+    "https://dendense.github.io/dens-ui/r/dialog.json",
+    "https://dendense.github.io/dens-ui/r/dropdown-menu.json",
+    "https://dendense.github.io/dens-ui/r/input.json",
+    "https://dendense.github.io/dens-ui/r/kbd.json",
+    "https://dendense.github.io/dens-ui/r/label.json",
+    "https://dendense.github.io/dens-ui/r/progress.json",
+    "https://dendense.github.io/dens-ui/r/radio-group.json",
+    "https://dendense.github.io/dens-ui/r/select.json",
+    "https://dendense.github.io/dens-ui/r/separator.json",
+    "https://dendense.github.io/dens-ui/r/sidebar.json",
+    "https://dendense.github.io/dens-ui/r/skeleton.json",
+    "https://dendense.github.io/dens-ui/r/switch.json",
+    "https://dendense.github.io/dens-ui/r/table.json",
+    "https://dendense.github.io/dens-ui/r/tabs.json",
+    "https://dendense.github.io/dens-ui/r/textarea.json",
+    "https://dendense.github.io/dens-ui/r/tooltip.json"
+  ],
+  "files": []
+}

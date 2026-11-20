@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "tabs",
+  "type": "registry:ui",
+  "title": "Tabs",
+  "dependencies": [
+    "radix-ui",
+    "class-variance-authority"
+  ],
+  "registryDependencies": [
+    "https://dendense.github.io/dens-ui/r/utils.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/tabs.tsx",
+      "type": "registry:ui",
+      "content": "import * as React from \"react\"\nimport { Tabs as TabsPrimitive } from \"radix-ui\"\nimport { cva, type VariantProps } from \"class-variance-authority\"\n\nimport { cn } from \"@/lib/utils\"\n\n/**\n * Two looks:\n *  - \"pill\": a segmented control (Today / 7 days / 30 days)\n *  - \"line\": underlined tabs with optional counts (Active 18 / Paused 4)\n */\nconst TabsVariantContext = React.createContext<\"pill\" | \"line\">(\"pill\")\n\nfunction Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) {\n  return <TabsPrimitive.Root data-slot=\"tabs\" className={cn(\"flex flex-col gap-4\", className)} {...props} />\n}\n\nconst tabsListVariants = cva(\"inline-flex w-fit items-center\", {\n  variants: {\n    variant: {\n      pill: \"h-10 gap-0.5 rounded-full bg-muted p-1 ring-1 ring-inset ring-border/60\",\n      line: \"h-10 gap-5 border-b border-border\",\n    },\n  },\n  defaultVariants: { variant: \"pill\" },\n})\n\nfunction TabsList({\n  className,\n  variant = \"pill\",\n  ...props\n}: React.ComponentProps<typeof TabsPrimitive.List> & VariantProps<typeof tabsListVariants>) {\n  return (\n    <TabsVariantContext.Provider value={variant ?? \"pill\"}>\n      <TabsPrimitive.List\n        data-slot=\"tabs-list\"\n        data-variant={variant}\n        className={cn(tabsListVariants({ variant }), className)}\n        {...props}\n      />\n    </TabsVariantContext.Provider>\n  )\n}\n\nfunction TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {\n  const variant = React.useContext(TabsVariantContext)\n  return (\n    <TabsPrimitive.Trigger\n      data-slot=\"tabs-trigger\"\n      className={cn(\n        \"inline-flex items-center justify-center gap-1.5 whitespace-nowrap text-sm font-semibold transition-[color,background-color,box-shadow] outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0\",\n        variant === \"pill\" &&\n          \"h-full rounded-full px-3.5 text-muted-foreground hover:text-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-[0_1px_2px_rgb(15_23_22/0.08),0_2px_8px_-2px_rgb(15_23_22/0.1)]\",\n        variant === \"line\" &&\n          \"relative -mb-px h-full border-b-2 border-transparent px-0.5 text-muted-foreground hover:text-foreground data-[state=active]:border-foreground data-[state=active]:text-foreground\",\n        className\n      )}\n      {...props}\n    />\n  )\n}\n\nfunction TabsCount({ className, ...props }: React.ComponentProps<\"span\">) {\n  return <span className={cn(\"text-xs font-medium tabular-nums text-muted-foreground\", className)} {...props} />\n}\n\nfunction TabsContent({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Content>) {\n  return <TabsPrimitive.Content data-slot=\"tabs-content\" className={cn(\"flex-1 outline-none\", className)} {...props} />\n}\n\nexport { Tabs, TabsList, TabsTrigger, TabsCount, TabsContent, tabsListVariants }\n"
+    }
+  ]
+}

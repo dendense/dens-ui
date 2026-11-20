@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "switch",
+  "type": "registry:ui",
+  "title": "Switch",
+  "dependencies": [
+    "radix-ui"
+  ],
+  "registryDependencies": [
+    "https://dendense.github.io/dens-ui/r/utils.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/switch.tsx",
+      "type": "registry:ui",
+      "content": "import * as React from \"react\"\nimport { Switch as SwitchPrimitive } from \"radix-ui\"\n\nimport { cn } from \"@/lib/utils\"\n\nfunction Switch({\n  className,\n  tone = \"primary\",\n  ...props\n}: React.ComponentProps<typeof SwitchPrimitive.Root> & { tone?: \"primary\" | \"highlight\" | \"ink\" }) {\n  return (\n    <SwitchPrimitive.Root\n      data-slot=\"switch\"\n      className={cn(\n        \"peer inline-flex h-6 w-[42px] shrink-0 items-center rounded-full p-[3px] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=unchecked]:bg-input\",\n        tone === \"primary\" && \"data-[state=checked]:bg-primary\",\n        tone === \"highlight\" && \"data-[state=checked]:bg-highlight\",\n        tone === \"ink\" && \"data-[state=checked]:bg-foreground\",\n        className\n      )}\n      {...props}\n    >\n      <SwitchPrimitive.Thumb\n        data-slot=\"switch-thumb\"\n        className=\"pointer-events-none block size-[18px] rounded-full bg-white shadow-[0_1px_3px_rgb(0_0_0/0.25)] transition-transform duration-200 ease-out-expo data-[state=checked]:translate-x-[18px] data-[state=unchecked]:translate-x-0\"\n      />\n    </SwitchPrimitive.Root>\n  )\n}\n\nexport { Switch }\n"
+    }
+  ]
+}

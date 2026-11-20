@@ -1,0 +1,52 @@
+@import "tailwindcss";
+@import "@fontsource-variable/figtree";
+@import "@fontsource-variable/jetbrains-mono";
+@import "../styles/dens-ui.css";
+
+@source "../";
+
+/* ---- Docs-site only (not part of the theme) ---- */
+:root {
+  --sh-class: #00797a;
+  --sh-identifier: #0f1716;
+  --sh-sign: #7b8785;
+  --sh-property: #0b3289;
+  --sh-entity: #00797a;
+  --sh-jsxliterals: #3d4a48;
+  --sh-string: #b35a00;
+  --sh-keyword: #a42423;
+  --sh-comment: #8a9592;
+  --code-bg: #f6f8f7;
+}
+.dark {
+  --sh-class: #4cc4c5;
+  --sh-identifier: #e3ece9;
+  --sh-sign: #7d8a87;
+  --sh-property: #9fb4ff;
+  --sh-entity: #4cc4c5;
+  --sh-jsxliterals: #c4cfcc;
+  --sh-string: #ffb35c;
+  --sh-keyword: #ff8a7a;
+  --sh-comment: #6b7876;
+  --code-bg: #101312;
+}
+
+.prose-dens {
+  max-width: 68ch;
+  line-height: 1.7;
+  font-size: 15.5px;
+  color: color-mix(in srgb, var(--foreground) 86%, var(--background));
+}
+.prose-dens p + p { margin-top: 1em; }
+.prose-dens a { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.prose-dens strong { color: var(--foreground); font-weight: 650; }
+.prose-dens code:not(pre code) {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  padding: 0.12em 0.4em;
+  border-radius: 6px;
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+.cq { container-type: inline-size; }

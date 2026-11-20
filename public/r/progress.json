@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "progress",
+  "type": "registry:ui",
+  "title": "Progress",
+  "dependencies": [
+    "radix-ui"
+  ],
+  "registryDependencies": [
+    "https://dendense.github.io/dens-ui/r/utils.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/progress.tsx",
+      "type": "registry:ui",
+      "content": "import * as React from \"react\"\nimport { Progress as ProgressPrimitive } from \"radix-ui\"\n\nimport { cn } from \"@/lib/utils\"\n\nfunction Progress({\n  className,\n  value,\n  tone = \"primary\",\n  ...props\n}: React.ComponentProps<typeof ProgressPrimitive.Root> & { tone?: \"primary\" | \"highlight\" | \"ink\" }) {\n  return (\n    <ProgressPrimitive.Root\n      data-slot=\"progress\"\n      value={value}\n      className={cn(\"relative h-2 w-full overflow-hidden rounded-full bg-muted\", className)}\n      {...props}\n    >\n      <ProgressPrimitive.Indicator\n        data-slot=\"progress-indicator\"\n        className={cn(\n          \"h-full w-full flex-1 rounded-full transition-transform duration-500 ease-out-expo\",\n          tone === \"primary\" && \"bg-primary\",\n          tone === \"highlight\" && \"bg-highlight\",\n          tone === \"ink\" && \"bg-foreground\"\n        )}\n        style={{ transform: `translateX(-${100 - (value ?? 0)}%)` }}\n      />\n    </ProgressPrimitive.Root>\n  )\n}\n\nexport { Progress }\n"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "badge",
+  "type": "registry:ui",
+  "title": "Badge",
+  "dependencies": [
+    "radix-ui",
+    "class-variance-authority"
+  ],
+  "registryDependencies": [
+    "https://dendense.github.io/dens-ui/r/utils.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/badge.tsx",
+      "type": "registry:ui",
+      "content": "import * as React from \"react\"\nimport { Slot } from \"radix-ui\"\nimport { cva, type VariantProps } from \"class-variance-authority\"\n\nimport { cn } from \"@/lib/utils\"\n\nconst badgeVariants = cva(\n  \"inline-flex w-fit shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold leading-5 tabular-nums [&>svg]:size-3 [&>svg]:pointer-events-none\",\n  {\n    variants: {\n      variant: {\n        default: \"bg-primary text-primary-foreground\",\n        highlight: \"bg-highlight text-highlight-foreground\",\n        soft: \"bg-soft text-soft-foreground\",\n        secondary: \"bg-secondary text-secondary-foreground\",\n        outline: \"border border-border bg-card text-foreground\",\n        success: \"bg-success text-success-foreground\",\n        warning: \"bg-warning text-warning-foreground\",\n        info: \"bg-info text-info-foreground\",\n        destructive: \"bg-destructive text-destructive-foreground\",\n      },\n    },\n    defaultVariants: { variant: \"default\" },\n  }\n)\n\nfunction Badge({\n  className,\n  variant,\n  asChild = false,\n  ...props\n}: React.ComponentProps<\"span\"> &\n  VariantProps<typeof badgeVariants> & { asChild?: boolean }) {\n  const Comp = asChild ? Slot.Root : \"span\"\n  return (\n    <Comp\n      data-slot=\"badge\"\n      className={cn(badgeVariants({ variant }), className)}\n      {...props}\n    />\n  )\n}\n\n/** Small status dot, use inside a Badge or next to text. */\nfunction StatusDot({\n  className,\n  tone = \"brand\",\n  ...props\n}: React.ComponentProps<\"span\"> & {\n  tone?: \"brand\" | \"highlight\" | \"destructive\" | \"muted\"\n}) {\n  return (\n    <span\n      data-slot=\"status-dot\"\n      aria-hidden\n      className={cn(\n        \"inline-block size-1.5 shrink-0 rounded-full\",\n        tone === \"brand\" && \"bg-brand\",\n        tone === \"highlight\" && \"bg-highlight\",\n        tone === \"destructive\" && \"bg-destructive\",\n        tone === \"muted\" && \"bg-muted-foreground/60\",\n        className\n      )}\n      {...props}\n    />\n  )\n}\n\nexport { Badge, StatusDot, badgeVariants }\n"
+    }
+  ]
+}
