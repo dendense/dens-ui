@@ -43,7 +43,7 @@ export function CodeBlock({
           {title}
         </div>
       )}
-      <CopyButton value={code.trimEnd()} className="absolute right-2 top-2 bg-(--code-bg)" />
+      <CopyButton value={code.trimEnd()} className="absolute right-2 top-2 rounded-[10px] bg-(--code-bg)" />
       <pre
         className="overflow-auto px-4 py-3.5 pr-12 font-mono text-[12.5px] leading-[1.7]"
         style={maxHeight ? { maxHeight } : undefined}

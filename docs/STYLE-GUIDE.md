@@ -55,6 +55,10 @@ Every token is a CSS variable, and `@theme inline` exposes it to Tailwind, so ea
 
 Base radius is `--radius: 0.875rem`. Change it once and the whole scale follows.
 
+**Nested corners:** when an element sits close to its container's corner, outer radius = inner radius + padding. For example, a Sidebar is 28 = item 18 + padding 10, and a menu is 18 = item 14 + padding 4. Check this rule whenever you place something in a corner.
+
+**The palette sheet:** every curve is a circular arc. Facing arcs are concentric, with radii that differ by the gap, so the gap stays exactly 16 units through the bends. See `src/site/parts/sheet-geometry.ts`, and run `npm run check:geometry` to measure it.
+
 ## 5. Depth
 
 Two elevations, both with a real offset and a soft blur:

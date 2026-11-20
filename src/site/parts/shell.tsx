@@ -125,7 +125,7 @@ export function DocsLayout({ children }: { children: React.ReactNode }) {
             {open ? <XIcon /> : <MenuIcon />} {open ? "Close menu" : "Browse docs"}
           </Button>
           {open && (
-            <div className="mt-3 rounded-2xl bg-surface p-3 ring-1 ring-border">
+            <div className="mt-3 rounded-[26px] bg-surface p-3 ring-1 ring-border">
               <DocsNav onNavigate={() => setOpen(false)} />
             </div>
           )}

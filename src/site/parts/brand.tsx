@@ -1,13 +1,17 @@
 import { cn } from "@/lib/utils"
+import { mark } from "./sheet-geometry"
 
 /** The Dens-UI mark: the palette sheet in miniature. */
 export function Mark({ className }: { className?: string }) {
+  // 32 × 32 frame, radius 9 = block radius 5 + margin 4 (concentric); blocks from sheet-geometry
   return (
     <svg viewBox="0 0 32 32" aria-hidden className={cn("size-7", className)}>
       <rect width="32" height="32" rx="9" fill="#0c0b0b" />
-      <path d="M6 10a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v4a4 4 0 0 1-4 4H11a3 3 0 0 0-3 2.4L6 21z" fill="#008c8d" />
-      <rect x="18" y="20" width="8" height="6" rx="3" fill="#ff8a00" />
-      <rect x="6" y="22.5" width="10" height="3.5" rx="1.75" fill="#c0ebd7" />
+      <g transform="translate(4 4)">
+        <path d={mark.top} fill="#008c8d" />
+        <path d={mark.left} fill="#c0ebd7" />
+        <path d={mark.right} fill="#ff8a00" />
+      </g>
     </svg>
   )
 }

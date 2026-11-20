@@ -8,6 +8,13 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Mark } from "../parts/brand"
+import { SHEET, SHEET_INSET, sheet } from "../parts/sheet-geometry"
+
+/* positions in sheet units → % of the sheet, sizes → container-query width */
+const sx = (u: number) => `${(u / SHEET.W) * 100}%`
+const sy = (u: number) => `${(u / SHEET.H) * 100}%`
+const cq = (u: number) => `${(u / SHEET.W) * 100}cqw`
+const inset = SHEET_INSET
 
 export function LoginBlock({ className }: { className?: string }) {
   return (
@@ -21,22 +28,22 @@ export function LoginBlock({ className }: { className?: string }) {
           </div>
           <div className="cq mt-auto w-full max-w-[520px]">
             <div className="relative aspect-[600/640]">
-              <svg viewBox="0 0 600 640" className="absolute inset-0 size-full" aria-hidden>
-                <path d="M0,56 Q0,0 56,0 H544 Q600,0 600,56 V300 Q600,372 528,372 H92 Q30,372 0,430 Z" fill="#008C8D" />
-                <path d="M0,468 Q38,388 110,388 H236 Q292,388 292,444 V584 Q292,640 236,640 H56 Q0,640 0,584 Z" fill="#C0EBD7" />
-                <path d="M308,444 Q308,388 364,388 H520 Q590,388 600,330 V584 Q600,640 544,640 H364 Q308,640 308,584 Z" fill="#FF8A00" />
+              <svg viewBox={`0 0 ${SHEET.W} ${SHEET.H}`} className="absolute inset-0 size-full" aria-hidden>
+                <path d={sheet.top} fill="#008C8D" />
+                <path d={sheet.left} fill="#C0EBD7" />
+                <path d={sheet.right} fill="#FF8A00" />
               </svg>
-              <div className="absolute left-[8%] right-[8%] top-[9%]">
-                <p className="text-[8cqw] font-bold leading-[1.02] tracking-[-0.035em] text-white">Every workflow, one calm console.</p>
-                <p className="mt-[3cqw] max-w-[85%] text-[3.4cqw] font-medium leading-snug text-[#031414]">Approvals, runs and alerts for the whole ops team.</p>
+              <div className="absolute" style={{ left: sx(inset), right: sx(inset), top: sy(inset) }}>
+                <p className="font-bold leading-[1.02] tracking-[-0.035em] text-white" style={{ fontSize: cq(48) }}>Every workflow, one calm console.</p>
+                <p className="max-w-[85%] font-medium leading-snug text-[#031414]" style={{ fontSize: cq(20), marginTop: cq(16) }}>Approvals, runs and alerts for the whole ops team.</p>
               </div>
-              <div className="absolute bottom-[7%] left-[6%] w-[36%] text-[#00585a]">
-                <div className="text-[9cqw] font-bold leading-none tracking-[-0.04em] tabular-nums">98.7%</div>
-                <div className="mt-[1.5cqw] text-[3cqw] font-semibold leading-tight">runs succeed on the first try</div>
+              <div className="absolute text-[#00585a]" style={{ left: sx(inset), top: sy(sheet.yb + inset), width: sx(SHEET.col - 2 * inset) }}>
+                <div className="font-bold leading-none tracking-[-0.04em] tabular-nums" style={{ fontSize: cq(54) }}>98.7%</div>
+                <div className="font-semibold leading-tight" style={{ fontSize: cq(18), marginTop: cq(8) }}>runs succeed on the first try</div>
               </div>
-              <div className="absolute bottom-[7%] left-[57%] w-[36%] text-[#1f1100]">
-                <div className="text-[9cqw] font-bold leading-none tracking-[-0.04em] tabular-nums">3</div>
-                <div className="mt-[1.5cqw] text-[3cqw] font-semibold leading-tight">approvals waiting for you</div>
+              <div className="absolute text-[#1f1100]" style={{ left: sx(sheet.x0 + inset), top: sy(sheet.yb + inset), width: sx(SHEET.W - sheet.x0 - 2 * inset) }}>
+                <div className="font-bold leading-none tracking-[-0.04em] tabular-nums" style={{ fontSize: cq(54) }}>3</div>
+                <div className="font-semibold leading-tight" style={{ fontSize: cq(18), marginTop: cq(8) }}>approvals waiting for you</div>
               </div>
             </div>
           </div>
@@ -75,7 +82,7 @@ export function LoginBlock({ className }: { className?: string }) {
                   <InputGroup
                     start={<LockIcon />}
                     end={
-                      <button type="button" aria-label="Show password" className="grid size-7 place-content-center rounded-md text-muted-foreground hover:text-foreground [&_svg]:size-4">
+                      <button type="button" aria-label="Show password" className="grid size-6 place-content-center rounded-[6px] text-muted-foreground hover:text-foreground [&_svg]:size-4">
                         <EyeIcon />
                       </button>
                     }

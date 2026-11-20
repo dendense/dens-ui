@@ -1,15 +1,23 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { SHEET, SHEET_FRAME, SHEET_INSET, sheet } from "./sheet-geometry"
 
 /**
  * The signature move: the Mars Green palette sheet from the references,
- * three blocks joined by concave curves on near-black. Live UI can sit on top
- * through the `slots` (positioned in % of the sheet).
+ * three blocks joined by concave arcs on near-black. Geometry lives in
+ * sheet-geometry.ts (constant 16-unit gap, concentric arcs and corners).
+ * Live UI can sit on the green block through `topSlot`.
  */
-const TOP = "M0,56 Q0,0 56,0 H544 Q600,0 600,56 V300 Q600,372 528,372 H92 Q30,372 0,430 Z"
-const LEFT = "M0,468 Q38,388 110,388 H236 Q292,388 292,444 V584 Q292,640 236,640 H56 Q0,640 0,584 Z"
-const RIGHT = "M308,444 Q308,388 364,388 H520 Q590,388 600,330 V584 Q600,640 544,640 H364 Q308,640 308,584 Z"
+const { W, H, R } = SHEET
+const P = SHEET_FRAME
+const VW = W + 2 * P
+const VH = H + 2 * P
+/** units → % of the inner block area */
+const px = (u: number) => `${(u / W) * 100}%`
+const py = (u: number) => `${(u / H) * 100}%`
+/** units → container-query width of the inner area (1cqw = W/100 units) */
+const cq = (u: number) => `${(u / W) * 100}cqw`
 
 export type Swatch = { name: string; hex: string; rgb: string; ink: string }
 
@@ -33,38 +41,58 @@ export function PaletteSheet({
   showLabels?: boolean
 }) {
   const { soft, accent } = sheetPairs[pair]
+  const fill = { transition: "fill 400ms cubic-bezier(0.16,1,0.3,1)" }
+  const inset = SHEET_INSET
   return (
-    <div className={cn("cq", className)}>
-    <div className="relative rounded-[clamp(20px,5cqw,40px)] bg-[#0c0b0b] p-[4.5cqw] shadow-raised ring-1 ring-white/5">
-      <div className="relative aspect-[600/640]">
-        <svg viewBox="0 0 600 640" className="absolute inset-0 size-full" aria-hidden>
-          <path d={TOP} fill="#008C8D" />
-          <path d={LEFT} fill={soft.hex} style={{ transition: "fill 400ms cubic-bezier(0.16,1,0.3,1)" }} />
-          <path d={RIGHT} fill={accent.hex} style={{ transition: "fill 400ms cubic-bezier(0.16,1,0.3,1)" }} />
-        </svg>
+    <div className={cn("relative", className)}>
+      <svg viewBox={`0 0 ${VW} ${VH}`} className="block h-auto w-full drop-shadow-[0_18px_28px_rgb(15_23_22/0.22)]" aria-hidden>
+        {/* frame radius = block radius + margin, so the corners are concentric */}
+        <rect width={VW} height={VH} rx={R + P} fill="#0c0b0b" />
+        <g transform={`translate(${P} ${P})`}>
+          <path d={sheet.top} fill="#008C8D" />
+          <path d={sheet.left} fill={soft.hex} style={fill} />
+          <path d={sheet.right} fill={accent.hex} style={fill} />
+        </g>
+      </svg>
 
-        {topSlot && <div className="absolute right-[5%] top-[6%] w-[54%]">{topSlot}</div>}
+      {/* overlay covering exactly the inner block area */}
+      <div className="cq absolute" style={{ left: `${(P / VW) * 100}%`, top: `${(P / VH) * 100}%`, width: `${(W / VW) * 100}%`, height: `${(H / VH) * 100}%` }}>
+        {topSlot && (
+          <div
+            className="absolute w-[54%] [&>[data-slot=card]]:rounded-[var(--slot-r)]"
+            style={{ right: px(inset), top: py(inset), ["--slot-r" as string]: cq(R - inset) }}
+          >
+            {topSlot}
+          </div>
+        )}
 
         {showLabels && (
           <>
-            <div className="absolute left-[7%] top-[39%] text-[#fff2df]">
-              <div className="text-[7.4cqw] font-bold leading-none tracking-[-0.03em]">Mars Green</div>
-              <div className="mt-[1.6cqw] font-mono text-[2.5cqw] font-medium tracking-[0.08em] text-[#031414]">#008C8D&nbsp;&nbsp;RGB 0 140 141</div>
+            <div className="absolute text-[#fff2df]" style={{ left: px(inset), bottom: py(H - sheet.yt + inset) }}>
+              <div className="font-bold leading-none tracking-[-0.03em]" style={{ fontSize: cq(48) }}>Mars Green</div>
+              <div className="font-mono font-medium tracking-[0.08em] text-[#031414]" style={{ fontSize: cq(16), marginTop: cq(10) }}>
+                #008C8D&nbsp;&nbsp;RGB 0 140 141
+              </div>
             </div>
-            <div className="absolute bottom-[6%] left-[6%]" style={{ color: soft.ink }}>
-              <div className="font-mono text-[2.3cqw] tracking-[0.08em]">RGB {soft.rgb}</div>
-              <div className="mt-[0.8cqw] text-[5.2cqw] font-bold leading-none tracking-[-0.02em]">{soft.name}</div>
-              <div className="mt-[1cqw] font-mono text-[2.5cqw] font-medium tracking-[0.08em]">{soft.hex}</div>
+            <div className="absolute" style={{ left: px(inset), bottom: py(inset), color: soft.ink }}>
+              <SwatchLabel s={soft} />
             </div>
-            <div className="absolute bottom-[6%] left-[57%]" style={{ color: accent.ink }}>
-              <div className="font-mono text-[2.3cqw] tracking-[0.08em]">RGB {accent.rgb}</div>
-              <div className="mt-[0.8cqw] text-[5.2cqw] font-bold leading-none tracking-[-0.02em]">{accent.name}</div>
-              <div className="mt-[1cqw] font-mono text-[2.5cqw] font-medium tracking-[0.08em]">{accent.hex}</div>
+            <div className="absolute" style={{ left: px(sheet.x0 + inset), bottom: py(inset), color: accent.ink }}>
+              <SwatchLabel s={accent} />
             </div>
           </>
         )}
       </div>
     </div>
-    </div>
+  )
+}
+
+function SwatchLabel({ s }: { s: Swatch }) {
+  return (
+    <>
+      <div className="font-mono tracking-[0.08em]" style={{ fontSize: cq(15) }}>RGB {s.rgb}</div>
+      <div className="font-bold leading-none tracking-[-0.02em]" style={{ fontSize: cq(34), marginTop: cq(6) }}>{s.name}</div>
+      <div className="font-mono font-medium tracking-[0.08em]" style={{ fontSize: cq(16), marginTop: cq(8) }}>{s.hex}</div>
+    </>
   )
 }

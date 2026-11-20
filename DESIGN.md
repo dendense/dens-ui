@@ -333,6 +333,13 @@ The Mars Green block, a soft block and an accent block joined by concave curves 
 ### Dot-matrix chart (dashboard block)
 Run counts per hour are stacked dots, one dot per three runs: done hours in Ink at 80%, hours after a slowdown in Hermès Orange, scheduled hours as hollow Muted Ink rings. A 1.5px Ink line marks "now" and an orange line marks the onset of the slowdown, each with a mono pill label.
 
+### Geometry (curves, gaps and nested corners)
+- **Palette sheet:** every curve is a circular arc. Facing arcs across a gap are concentric, and their radii differ by exactly the gap `g`, so the gap is constant through every bend (16 units on the 600 × 640 sheet, 2 on the 24 × 24 mark). The formulas are in `src/site/parts/sheet-geometry.ts`; `node scripts/check-sheet-geometry.ts` measures the gap along every facing edge (16.00 … 16.00).
+- **Frame:** margin `P = 2g`, frame radius `R + P` (56 + 32 = 88), concentric with the blocks.
+- **Inset content:** labels and slotted UI sit 40 units inside a block; slotted UI takes radius `R − 40` (16).
+- **Nested corners:** where an element hugs its container's corner, outer radius = inner radius + padding. Examples: Sidebar 28 = item 18 + 10; rail 22 = item 14 + 8; dialog close button 16 + inset 12 = 28; select and menu 18 = item 14 + 4; Kbd in an input 6 + 8 = 14; dashboard main 34 = card 22 + 12 and frame 46 = 34 + 12.
+- **Charts on buckets:** dot columns sit at bucket centres, x = (h + ½)·col. Time markers sit on bucket boundaries, x = h·col, the middle of the gutter, so a full-height line never touches a dot. Axis labels sit under column centres.
+
 ### Motion
 Overlays pop in over 180ms (4px rise, 0.97 scale) on `cubic-bezier(0.16, 1, 0.3, 1)` and leave over 120ms ease-in. With reduced motion every animation and transition collapses to 1ms.
 

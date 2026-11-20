@@ -48,7 +48,7 @@ function InputGroup({
         </span>
       )}
       {children}
-      {end && <span className="absolute right-2.5 flex items-center">{end}</span>}
+      {end && <span className="absolute right-2 flex items-center">{end}</span>}
     </div>
   )
 }

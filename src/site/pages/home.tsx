@@ -17,7 +17,7 @@ import { LoginBlock } from "../blocks/login"
 function InstallLine() {
   const cmd = `npx shadcn@latest add ${REGISTRY_URL}/button.json`
   return (
-    <div className="flex max-w-full items-start gap-3 rounded-2xl bg-card py-2 pl-4 pr-2 shadow-panel ring-1 ring-border">
+    <div className="flex max-w-full items-start gap-3 rounded-[24px] bg-card py-2 pl-4 pr-2 shadow-panel ring-1 ring-border">
       <span className="select-none pt-1.5 font-mono text-[13px] text-primary">$</span>
       <code className="min-w-0 flex-1 py-1.5 font-mono text-[13px] leading-relaxed [overflow-wrap:break-word]">
         {cmd.split("/").map((part, i, all) => (
@@ -38,7 +38,7 @@ function InstallLine() {
 
 function SheetCard() {
   return (
-    <Card className="gap-3 rounded-[clamp(14px,3.4cqw,22px)] py-[3cqw] shadow-raised">
+    <Card className="gap-3 py-[3cqw] shadow-raised">
       <div className="flex items-center justify-between gap-2 px-[3.2cqw]">
         <span className="text-[clamp(11px,2.6cqw,15px)] font-semibold">Runs today</span>
         <Badge variant="highlight" className="text-[clamp(9px,2cqw,12px)]">Waiting on you</Badge>

@@ -23,7 +23,7 @@ function Nav({ collapsed = false }: { collapsed?: boolean }) {
       <SidebarFooter>
         <SidebarItem icon={<SettingsIcon />}>Settings</SidebarItem>
         {!collapsed ? (
-          <div className="flex items-center gap-2.5 rounded-2xl bg-sidebar-accent p-2 ring-1 ring-sidebar-border">
+          <div className="flex items-center gap-2.5 rounded-[18px] bg-sidebar-accent p-2 ring-1 ring-sidebar-border">
             <Avatar className="size-8"><AvatarFallback>NR</AvatarFallback></Avatar>
             <div className="leading-tight">
               <div className="text-[13px] font-semibold">Nadia Rahma</div>

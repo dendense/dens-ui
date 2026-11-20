@@ -55,9 +55,13 @@ function RunsChart() {
   const r = 3.1
   const cy = (k: number) => H - 5 - k * pitch
   const cx = (i: number) => i * col + col / 2
-  const nowX = 14 * col + col * 0.95
-  const slowX = 12 * col + col * 0.25
   const dots = (v: number) => Math.ceil(v / PER_DOT)
+  // Dots are hourly buckets: hour h spans [h·col, (h+1)·col] and its dots sit at the centre.
+  // Markers go on bucket boundaries, x = h·col, which is exactly the middle of the gutter
+  // between two dot columns, so a full-height line never touches a dot.
+  const boundary = (h: number) => h * col
+  const slowX = boundary(SLOW_FROM) // first slow bucket starts here (onset 12:15)
+  const nowX = boundary(done.length) // end of the current, partial bucket (now 14:26)
   return (
     <svg viewBox={`0 0 ${W} ${H + 22}`} className="h-auto w-full" role="img" aria-label="Runs per hour today, one dot per three runs: 286 done, climbing from 07:00 to a 13:00 peak; slower since 12:15; 47 more scheduled.">
       {done.map((v, i) =>
@@ -73,23 +77,23 @@ function RunsChart() {
       {Array.from({ length: 24 }, (_, i) => (
         <circle key={`b${i}`} cx={cx(i)} cy={H + 2} r={0.9} className="fill-muted-foreground/40" />
       ))}
-      <line x1={slowX} x2={slowX} y1={8} y2={H} className="stroke-highlight" strokeWidth={1.5} />
-      <line x1={nowX} x2={nowX} y1={0} y2={H} className="stroke-foreground" strokeWidth={1.5} />
+      <line x1={slowX} x2={slowX} y1={19} y2={H} className="stroke-highlight" strokeWidth={1.5} strokeLinecap="round" />
+      <line x1={nowX} x2={nowX} y1={11} y2={H} className="stroke-foreground" strokeWidth={1.5} strokeLinecap="round" />
       <g transform={`translate(${nowX + 6} 2)`}>
         <rect width={74} height={18} rx={9} className="fill-foreground" />
         <text x={37} y={12.5} textAnchor="middle" className="fill-background font-mono text-[10px] font-medium">
           now 14:26
         </text>
       </g>
-      <g transform={`translate(${slowX - 140} 10)`}>
+      <g transform={`translate(${slowX - 6 - 132} 10)`}>
         <rect width={132} height={18} rx={9} className="fill-card stroke-highlight" />
         <text x={66} y={12.5} textAnchor="middle" className="fill-foreground font-mono text-[10px]">
           12:15 · 2.4× slower
         </text>
       </g>
-      {["00", "06", "12", "18", "24"].map((t, i) => (
-        <text key={t} x={i === 4 ? W : i * 6 * col} y={H + 18} textAnchor={i === 0 ? "start" : i === 4 ? "end" : "middle"} className="fill-muted-foreground font-mono text-[10px]">
-          {t}
+      {[0, 6, 12, 18, 23].map((h) => (
+        <text key={h} x={cx(h)} y={H + 18} textAnchor="middle" className="fill-muted-foreground font-mono text-[10px]">
+          {String(h).padStart(2, "0")}
         </text>
       ))}
     </svg>
@@ -153,7 +157,7 @@ const approvals = [
 
 export function DashboardBlock({ className }: { className?: string }) {
   return (
-    <div className={cn("@container rounded-[28px] bg-background p-2.5 text-foreground ring-1 ring-border sm:p-3", className)}>
+    <div className={cn("@container rounded-[40px] bg-background p-2.5 text-foreground ring-1 ring-border sm:rounded-[46px] sm:p-3 lg:rounded-l-[40px] xl:rounded-l-[34px]", className)}>
       <div className="grid grid-cols-[minmax(0,1fr)] gap-3 lg:grid-cols-[236px_minmax(0,1fr)] xl:grid-cols-[56px_236px_minmax(0,1fr)]">
         <div className="hidden flex-col gap-3 xl:flex">
           <SidebarRail aria-label="Apps">
@@ -180,7 +184,7 @@ export function DashboardBlock({ className }: { className?: string }) {
             </div>
           </SidebarHeader>
           <InputGroup start={<SearchIcon />} end={<Kbd>⌘K</Kbd>}>
-            <Input placeholder="Search" aria-label="Search" className="h-9 rounded-xl bg-card" />
+            <Input placeholder="Search" aria-label="Search" className="bg-card" />
           </InputGroup>
           <SidebarSection label="Workspace">
             <SidebarItem icon={<LayoutGridIcon />} active>Overview</SidebarItem>
@@ -209,7 +213,7 @@ export function DashboardBlock({ className }: { className?: string }) {
           </SidebarSection>
           <SidebarFooter>
             <SidebarItem icon={<SettingsIcon />}>Settings</SidebarItem>
-            <div className="flex items-center gap-2.5 rounded-2xl bg-sidebar-accent p-2 ring-1 ring-sidebar-border">
+            <div className="flex items-center gap-2.5 rounded-[18px] bg-sidebar-accent p-2 ring-1 ring-sidebar-border">
               <Avatar className="size-8">
                 <AvatarFallback>NR</AvatarFallback>
               </Avatar>
@@ -221,8 +225,8 @@ export function DashboardBlock({ className }: { className?: string }) {
           </SidebarFooter>
         </Sidebar>
 
-        <div className="@container flex min-w-0 flex-col gap-3 rounded-3xl bg-surface p-2 ring-1 ring-border/70 sm:p-5">
-          <div className="flex flex-wrap items-end justify-between gap-4 px-1 pt-1">
+        <div className="@container flex min-w-0 flex-col gap-3 rounded-[30px] bg-surface p-2 ring-1 ring-border/70 sm:rounded-[34px] sm:p-3">
+          <div className="flex flex-wrap items-end justify-between gap-4 px-2 pb-1 pt-2 sm:px-3 sm:pt-3">
             <div>
               <div className="text-[13px] text-muted-foreground">Lumbung / Overview</div>
               <h3 className="mt-1 text-[30px] font-semibold leading-none tracking-[-0.035em]">Overview</h3>
@@ -367,8 +371,8 @@ export function DashboardBlock({ className }: { className?: string }) {
                       <div className="text-[12.5px] text-muted-foreground">{a.meta}</div>
                       {a.primary && (
                         <div className="mt-3 flex flex-wrap items-center gap-2">
-                          <Button size="sm" variant="ink">Approve <Kbd className="h-5 border-white/20 bg-white/10 text-background/80 shadow-none dark:border-black/20 dark:bg-black/10">A</Kbd></Button>
-                          <Button size="sm" variant="outline">Decline <Kbd className="h-5">Esc</Kbd></Button>
+                          <Button size="sm" variant="ink" className="pr-1.5">Approve <Kbd className="h-5 border-white/20 bg-white/10 text-background/80 shadow-none dark:border-black/20 dark:bg-black/10">A</Kbd></Button>
+                          <Button size="sm" variant="outline" className="pr-1.5">Decline <Kbd className="h-5 rounded-md">Esc</Kbd></Button>
                         </div>
                       )}
                     </div>

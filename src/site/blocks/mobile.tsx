@@ -68,7 +68,7 @@ function TabBar({ active }: { active: string }) {
     ["Profile", UserIcon],
   ] as const
   return (
-    <nav className="absolute inset-x-3 bottom-3 flex h-[60px] items-center justify-around rounded-[22px] bg-foreground text-background" aria-label="App">
+    <nav className="absolute inset-x-3 bottom-3 flex h-[60px] items-center justify-around rounded-[32px] bg-foreground text-background" aria-label="App">
       {items.map(([name, Icon]) => (
         <span key={name} className={cn("flex flex-col items-center gap-0.5 text-[10px] font-medium", name === active ? "text-background" : "text-background/50")}>
           <Icon className="size-[18px]" />

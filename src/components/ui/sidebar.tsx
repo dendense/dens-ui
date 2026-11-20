@@ -21,8 +21,8 @@ function Sidebar({
         data-slot="sidebar"
         data-collapsed={collapsed}
         className={cn(
-          "group/sidebar flex h-full flex-col gap-5 rounded-3xl bg-sidebar p-3 text-sidebar-foreground ring-1 ring-sidebar-border",
-          collapsed ? "w-[68px] items-center" : "w-64",
+          "group/sidebar flex h-full flex-col gap-5 rounded-3xl bg-sidebar p-2.5 text-sidebar-foreground ring-1 ring-sidebar-border",
+          collapsed ? "w-[60px] items-center" : "w-64",
           className
         )}
         {...props}
