@@ -7,7 +7,7 @@ import { Link, REPO_URL, setTheme, usePath, useTheme } from "../lib"
 import { componentGroups, components } from "../catalog"
 import { GitHubIcon, Mark } from "./brand"
 
-export function ThemeToggle() {
+function ThemeToggle() {
   const theme = useTheme()
   const next = theme === "dark" ? "light" : "dark"
   return (

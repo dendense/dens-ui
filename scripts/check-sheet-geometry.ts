@@ -6,7 +6,7 @@ type Pt = [number, number]
 
 // Sample an SVG path made of M/H/V/A/Z commands (absolute) into points.
 function sample(d: string, step = 0.5): Pt[] {
-  const t = d.match(/[MHVAZQ]|-?\d*\.?\d+/g)!
+  const t = d.match(/[MHVAZ]|-?\d*\.?\d+/g)!
   const pts: Pt[] = []
   let i = 0, x = 0, y = 0, sx = 0, sy = 0
   const line = (nx: number, ny: number) => {
@@ -20,12 +20,6 @@ function sample(d: string, step = 0.5): Pt[] {
     else if (c === "H") line(+t[i++], y)
     else if (c === "V") line(x, +t[i++])
     else if (c === "Z") line(sx, sy)
-    else if (c === "Q") {
-      const qx = +t[i++], qy = +t[i++], nx = +t[i++], ny = +t[i++]
-      const n = 400
-      for (let k = 1; k <= n; k++) { const u = k / n; pts.push([(1 - u) ** 2 * x + 2 * (1 - u) * u * qx + u * u * nx, (1 - u) ** 2 * y + 2 * (1 - u) * u * qy + u * u * ny]) }
-      x = nx; y = ny
-    }
     else if (c === "A") {
       const r = +t[i++]; i++; i++; i++; const sweep = +t[i++]; const nx = +t[i++], ny = +t[i++]
       // centre of a minor arc of radius r from (x,y) to (nx,ny)
@@ -87,9 +81,5 @@ function strict(name: string, p: SheetParams, paths = sheetGeometry(p)) {
   }
 }
 console.log("--- constant-gap test")
-strict("new", SHEET)
-strict("old", SHEET, {
-  top: "M0,56 Q0,0 56,0 H544 Q600,0 600,56 V300 Q600,372 528,372 H92 Q30,372 0,430 Z",
-  left: "M0,468 Q38,388 110,388 H236 Q292,388 292,444 V584 Q292,640 236,640 H56 Q0,640 0,584 Z",
-  right: "M308,444 Q308,388 364,388 H520 Q590,388 600,330 V584 Q600,640 544,640 H364 Q308,640 308,584 Z",
-} as ReturnType<typeof sheetGeometry>)
+strict("sheet", SHEET)
+strict("mark", MARK)

@@ -336,6 +336,17 @@ export function ComponentPage({ slug }: { slug: string }) {
         </>
       )}
 
+      {doc.notes && doc.notes.length > 0 && (
+        <>
+          <H2>Notes</H2>
+          <ul className="prose-dens list-disc space-y-2 pl-5">
+            {doc.notes.map((n) => (
+              <li key={n}>{n}</li>
+            ))}
+          </ul>
+        </>
+      )}
+
       <Pager
         prev={prev ? { to: `/docs/components/${prev.slug}`, label: prev.name } : { to: "/docs/theming", label: "Theming" }}
         next={next ? { to: `/docs/components/${next.slug}`, label: next.name } : { to: "/blocks/dashboard", label: "Blocks" }}
