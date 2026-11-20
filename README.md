@@ -6,7 +6,7 @@ Built on Radix primitives and Tailwind CSS v4.
 
 **Docs and live previews:** https://dendense.github.io/dens-ui
 
-- 22 components: Button, Badge, Card, Input, Textarea, Label, Checkbox, Switch, Radio Group, Select, Tabs, Dialog, Dropdown Menu, Tooltip, Avatar, Progress, Alert, Table, Sidebar, Separator, Kbd, Skeleton
+- 22 components: Button, Badge, Card, Input, Textarea, Label, Checkbox, Switch, Radio Group, Select, Tabs, Dialog, Dropdown Menu, Tooltip, Avatar, Progress, Alert, Table, Sidebar (with folders, an icon rail and a 24h meter), Separator, Kbd, Skeleton
 - 3 blocks: an ops dashboard, a split login screen, two mobile app screens
 - A shadcn-compatible registry, so `npx shadcn add <url>` installs any of it
 - Light and dark mode from one stylesheet, with the same token names shadcn/ui uses

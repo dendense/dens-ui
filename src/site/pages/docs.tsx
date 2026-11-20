@@ -8,7 +8,7 @@ import { Link, REGISTRY_URL, REPO_URL } from "../lib"
 import { CodeBlock } from "../parts/code"
 import { ComponentPreview } from "../parts/preview"
 import { H2, PageHeader } from "../parts/shell"
-import { PaletteSheet } from "../parts/palette-sheet"
+import { PaletteSheet, sheetPairs } from "../parts/palette-sheet"
 import themeCss from "@/styles/dens-ui.css?raw"
 import utilsSource from "@/lib/utils.ts?raw"
 
@@ -153,6 +153,7 @@ const tokenRows: { token: string; role: string }[] = [
   { token: "warning", role: "Champagne" },
   { token: "info", role: "Klein blue" },
   { token: "destructive", role: "Cartier red (pomegranate in dark)" },
+  { token: "rail", role: "Ink icon rail beside the sidebar" },
   { token: "border", role: "Hairlines" },
   { token: "ring", role: "Focus rings" },
 ]
@@ -171,6 +172,23 @@ export function ThemingPage() {
       />
       <div className="max-w-[560px]">
         <PaletteSheet />
+      </div>
+
+      <H2>The five sheets</H2>
+      <p className="prose-dens mb-6">
+        The reference study pairs Mars Green with five soft-and-strong couples. Dens-UI ships the first as its theme;
+        the other four supply <code>warning</code>, <code>info</code>, <code>destructive</code> and the chart series.
+      </p>
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        {sheetPairs.map((p, i) => (
+          <figure key={p.accent.name} className="grid gap-2">
+            <PaletteSheet pair={i} />
+            <figcaption className="text-[13px] text-muted-foreground">
+              <span className="font-semibold text-foreground">{p.soft.name} + {p.accent.name}</span>
+              {i === 0 ? " · the shipped theme" : " · supporting colours"}
+            </figcaption>
+          </figure>
+        ))}
       </div>
 
       <H2>Colour tokens</H2>

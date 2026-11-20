@@ -233,20 +233,33 @@ export const components: ComponentDoc[] = [
   {
     slug: "sidebar",
     name: "Sidebar",
-    description: "The navigation panel from the references, with sections, counts and a collapsed icon rail.",
-    demos: [{ file: "sidebar" }],
-    usage: `import { Sidebar, SidebarHeader, SidebarSection, SidebarItem, SidebarCount, SidebarFooter } from "@/components/ui/sidebar"
+    description: "The navigation from the references: sections with counts, collapsible folders, a collapsed mode, and an ink icon rail with a 24-hour meter.",
+    demos: [{ file: "sidebar" }, { file: "sidebar-rail", title: "Icon rail, 24h meter and folder tree", align: "start" }],
+    usage: `import { Sidebar, SidebarHeader, SidebarSection, SidebarItem, SidebarCount, SidebarFooter, SidebarFolder, SidebarRail, SidebarRailItem, SidebarMeter } from "@/components/ui/sidebar"
 
 <Sidebar>
   <SidebarSection label="Workspace">
     <SidebarItem icon={<LayoutGridIcon />} active>Overview</SidebarItem>
     <SidebarItem icon={<WorkflowIcon />} badge={<SidebarCount>24</SidebarCount>}>Workflows</SidebarItem>
+    <SidebarFolder icon={<FolderIcon />} label="Finance" defaultOpen>
+      <SidebarItem size="sm">Month-end close</SidebarItem>
+    </SidebarFolder>
   </SidebarSection>
-</Sidebar>`,
+</Sidebar>
+
+<SidebarRail aria-label="Apps">
+  <SidebarRailItem label="Overview" active><LayoutGridIcon /></SidebarRailItem>
+  <SidebarRailItem label="Approvals" dot><CheckCircle2Icon /></SidebarRailItem>
+</SidebarRail>
+<SidebarMeter label="24h" total={286} levels={hourlyRuns} />`,
     api: [
       { prop: "collapsed", type: "boolean", default: "false", note: "Icon rail; string labels become title tooltips." },
       { prop: "SidebarItem active", type: "boolean", note: "Sets aria-current=page." },
       { prop: "SidebarItem asChild", type: "boolean", note: "Wrap your router's Link." },
+      { prop: "SidebarItem size", type: '"default" | "sm"', default: '"default"', note: "Use sm for items inside a SidebarFolder." },
+      { prop: "SidebarFolder", type: "label, icon, badge, defaultOpen, open, onOpenChange", note: "Collapsible group on Radix Collapsible; the badge hides while open." },
+      { prop: "SidebarRailItem", type: "label (required), active, dot, asChild", note: "label is the accessible name; dot marks an area that needs attention." },
+      { prop: "SidebarMeter", type: "label, total?, levels: number[]", note: "One tick per period, newest at the bottom in the highlight colour." },
     ],
   },
   { slug: "separator", name: "Separator", description: "A 1px rule, horizontal or vertical.", demos: [{ file: "separator" }], usage: `import { Separator } from "@/components/ui/separator"

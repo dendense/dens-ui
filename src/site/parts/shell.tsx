@@ -147,7 +147,7 @@ export function PageHeader({ title, lead, className }: { title: string; lead?: R
 
 export function H2({ id, children }: { id?: string; children: React.ReactNode }) {
   return (
-    <h2 id={id} className="mb-4 mt-14 scroll-mt-24 text-[22px] font-bold tracking-[-0.02em] first:mt-0">
+    <h2 id={id} className="mb-4 mt-14 scroll-mt-24 text-[22px] font-bold tracking-[-0.02em]">
       {children}
     </h2>
   )

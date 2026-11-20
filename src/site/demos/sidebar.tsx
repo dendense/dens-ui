@@ -6,7 +6,7 @@ function Nav({ collapsed = false }: { collapsed?: boolean }) {
   return (
     <Sidebar collapsed={collapsed} className="h-[440px]">
       <SidebarHeader>
-        <span className="grid size-9 shrink-0 place-content-center rounded-xl bg-foreground text-sm font-bold text-background">F</span>
+        <span className="grid size-9 shrink-0 place-content-center rounded-xl bg-foreground text-sm font-bold text-background">L</span>
         {!collapsed && (
           <div className="leading-tight">
             <div className="text-sm font-semibold">Lumbung</div>

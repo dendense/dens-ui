@@ -18,6 +18,8 @@ colors:
   ink: "#0f1716"
   teal-gray-ground: "#edf0ef"
   surface: "#f5f7f6"
+  rail: "#0f1716"
+  night-rail: "#1b1f1e"
   panel-white: "#ffffff"
   muted-fill: "#e6ebe9"
   secondary-fill: "#e1e7e5"
@@ -314,6 +316,9 @@ Tactile, fully round pills with a confident weight.
 - **Top bar:** wordmark, then pill links in Muted Ink; the current page becomes a white pill with Panel elevation. Ghost icon buttons for theme and GitHub.
 - **Docs tree:** group headings in 13px semibold Ink; items are 14px Muted Ink in a 14px-radius row, hover tints to a translucent panel, current item becomes a white panel row in semibold with Panel elevation.
 - **App sidebar (component):** a 28px-radius column on the sidebar tint with a hairline ring; collapses to icons with a short divider in place of each group label.
+- **Folders:** a folder row with a chevron that rotates 90° on open; nested items are 32px, 13px text, hung off a 1px guide line in Sidebar Border. The folder's count hides while it is open.
+- **Icon rail:** a 56px ink column (`--rail`, 22px radius, Raised elevation) of 40px icon buttons at 55% Rail Foreground. The active button gets a 15% tint and a 4 by 16px Hermès Orange tab on its left edge; an area needing attention gets a 6px orange dot. Every rail button carries an accessible label.
+- **24h meter:** a 56px pill on the sidebar tint with a mono "24H" label, the total, and one 2px tick per hour, its width proportional to that hour's count, newest at the bottom in Hermès Orange.
 
 ### Segmented Control and Tabs
 - **Pill:** a 40px Muted Fill track with a 4px inset and hairline ring; the active segment is a white pill with a short two-layer lift.
@@ -324,6 +329,9 @@ A 42 by 24px pill track (Field Stroke when off) with an 18px white thumb that sl
 
 ### Palette Sheet (signature)
 The Mars Green block, a soft block and an accent block joined by concave curves on the near-black frame, labelled in bold Figtree names with mono hex and RGB values. It accepts live UI in a slot on the green block. Five pairings come from the reference sheets (Mint with Hermès Orange is the theme's own; Powder with Periwinkle, Champagne with Cartier Red, Lake Blue with Klein Blue, Skin with Pomegranate are supporting), and the fills cross-fade over 400ms on the expo ease-out.
+
+### Dot-matrix chart (dashboard block)
+Run counts per hour are stacked dots, one dot per three runs: done hours in Ink at 80%, hours after a slowdown in Hermès Orange, scheduled hours as hollow Muted Ink rings. A 1.5px Ink line marks "now" and an orange line marks the onset of the slowdown, each with a mono pill label.
 
 ### Motion
 Overlays pop in over 180ms (4px rise, 0.97 scale) on `cubic-bezier(0.16, 1, 0.3, 1)` and leave over 120ms ease-in. With reduced motion every animation and transition collapses to 1ms.

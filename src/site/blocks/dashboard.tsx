@@ -7,6 +7,8 @@ import {
   HistoryIcon,
   LayoutGridIcon,
   PauseIcon,
+  PlugIcon,
+  SlidersHorizontalIcon,
   PlusIcon,
   SearchIcon,
   SettingsIcon,
@@ -21,7 +23,18 @@ import { Button } from "@/components/ui/button"
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input, InputGroup } from "@/components/ui/input"
 import { Kbd } from "@/components/ui/kbd"
-import { Sidebar, SidebarCount, SidebarFooter, SidebarHeader, SidebarItem, SidebarSection } from "@/components/ui/sidebar"
+import {
+  Sidebar,
+  SidebarCount,
+  SidebarFolder,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarItem,
+  SidebarMeter,
+  SidebarRail,
+  SidebarRailItem,
+  SidebarSection,
+} from "@/components/ui/sidebar"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsCount, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
@@ -31,42 +44,34 @@ const done = [4, 3, 2, 2, 3, 5, 9, 16, 24, 31, 35, 38, 40, 42, 32] // 00–14 h,
 const scheduled = [9, 8, 7, 6, 5, 4, 4, 2, 2] // 15–23 h, 47 more
 const SLOW_FROM = 12
 
+const PER_DOT = 3 // one dot = three runs
+const yesterday = [30, 26, 22, 18, 14, 10, 8, 6, 5] // 15–23 h yesterday, for the 24 h rail meter
+
 function RunsChart() {
-  const max = 46
   const W = 480
   const H = 150
   const col = W / 24
-  const bw = col * 0.62
-  const y = (v: number) => H - (v / max) * (H - 18)
-  const nowX = 14 * col + col * 0.45
+  const pitch = 9
+  const r = 3.1
+  const cy = (k: number) => H - 5 - k * pitch
+  const cx = (i: number) => i * col + col / 2
+  const nowX = 14 * col + col * 0.95
   const slowX = 12 * col + col * 0.25
+  const dots = (v: number) => Math.ceil(v / PER_DOT)
   return (
-    <svg viewBox={`0 0 ${W} ${H + 22}`} className="h-auto w-full" role="img" aria-label="Runs per hour today: 286 done, climbing from 07:00 to a 13:00 peak; slower since 12:15; 47 more scheduled.">
-      {[0.25, 0.5, 0.75].map((f) => (
-        <line key={f} x1={0} x2={W} y1={H - f * (H - 18)} y2={H - f * (H - 18)} className="stroke-border" strokeDasharray="2 4" />
-      ))}
-      {done.map((v, i) => (
-        <rect
-          key={i}
-          x={i * col + (col - bw) / 2}
-          y={y(v)}
-          width={bw}
-          height={H - y(v)}
-          rx={3}
-          className={i >= SLOW_FROM ? "fill-highlight" : "fill-foreground/80"}
-        />
-      ))}
-      {scheduled.map((v, i) => (
-        <rect
-          key={i}
-          x={(i + 15) * col + (col - bw) / 2 + 0.5}
-          y={y(v) + 0.5}
-          width={bw - 1}
-          height={H - y(v) - 1}
-          rx={3}
-          className="fill-none stroke-muted-foreground/45"
-          strokeDasharray="3 2"
-        />
+    <svg viewBox={`0 0 ${W} ${H + 22}`} className="h-auto w-full" role="img" aria-label="Runs per hour today, one dot per three runs: 286 done, climbing from 07:00 to a 13:00 peak; slower since 12:15; 47 more scheduled.">
+      {done.map((v, i) =>
+        Array.from({ length: dots(v) }, (_, k) => (
+          <circle key={`${i}-${k}`} cx={cx(i)} cy={cy(k)} r={r} className={i >= SLOW_FROM ? "fill-highlight" : "fill-foreground/80"} />
+        ))
+      )}
+      {scheduled.map((v, i) =>
+        Array.from({ length: dots(v) }, (_, k) => (
+          <circle key={`s${i}-${k}`} cx={cx(i + 15)} cy={cy(k)} r={r - 0.6} className="fill-none stroke-muted-foreground/55" strokeWidth={1.1} />
+        ))
+      )}
+      {Array.from({ length: 24 }, (_, i) => (
+        <circle key={`b${i}`} cx={cx(i)} cy={H + 2} r={0.9} className="fill-muted-foreground/40" />
       ))}
       <line x1={slowX} x2={slowX} y1={8} y2={H} className="stroke-highlight" strokeWidth={1.5} />
       <line x1={nowX} x2={nowX} y1={0} y2={H} className="stroke-foreground" strokeWidth={1.5} />
@@ -83,7 +88,7 @@ function RunsChart() {
         </text>
       </g>
       {["00", "06", "12", "18", "24"].map((t, i) => (
-        <text key={t} x={i === 4 ? W : i * 6 * col} y={H + 16} textAnchor={i === 0 ? "start" : i === 4 ? "end" : "middle"} className="fill-muted-foreground font-mono text-[10px]">
+        <text key={t} x={i === 4 ? W : i * 6 * col} y={H + 18} textAnchor={i === 0 ? "start" : i === 4 ? "end" : "middle"} className="fill-muted-foreground font-mono text-[10px]">
           {t}
         </text>
       ))}
@@ -149,7 +154,23 @@ const approvals = [
 export function DashboardBlock({ className }: { className?: string }) {
   return (
     <div className={cn("@container rounded-[28px] bg-background p-2.5 text-foreground ring-1 ring-border sm:p-3", className)}>
-      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 lg:grid-cols-[236px_minmax(0,1fr)]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 lg:grid-cols-[236px_minmax(0,1fr)] xl:grid-cols-[56px_236px_minmax(0,1fr)]">
+        <div className="hidden flex-col gap-3 xl:flex">
+          <SidebarRail aria-label="Apps">
+            <SidebarRailItem label="Lumbung home" className="bg-brand text-brand-foreground hover:bg-brand/90 hover:text-brand-foreground">
+              <span className="text-[15px] font-bold">L</span>
+            </SidebarRailItem>
+            <SidebarRailItem label="Overview" active><LayoutGridIcon /></SidebarRailItem>
+            <SidebarRailItem label="Workflows"><WorkflowIcon /></SidebarRailItem>
+            <SidebarRailItem label="Approvals, 3 waiting" dot><CheckCircle2Icon /></SidebarRailItem>
+            <SidebarRailItem label="Run history"><HistoryIcon /></SidebarRailItem>
+            <SidebarRailItem label="Integrations"><PlugIcon /></SidebarRailItem>
+          </SidebarRail>
+          <SidebarMeter label="24h" total={286} levels={[...yesterday, ...done]} />
+          <SidebarRail aria-label="Preferences" className="mt-auto">
+            <SidebarRailItem label="Preferences"><SlidersHorizontalIcon /></SidebarRailItem>
+          </SidebarRail>
+        </div>
         <Sidebar className="hidden h-auto w-auto lg:flex">
           <SidebarHeader>
             <span className="grid size-9 shrink-0 place-content-center rounded-xl bg-foreground text-sm font-bold text-background">L</span>
@@ -173,9 +194,18 @@ export function DashboardBlock({ className }: { className?: string }) {
             <SidebarItem icon={<StatusDot tone="destructive" className="mx-[5px] size-2" />} badge={<SidebarCount>1</SidebarCount>}>Failed today</SidebarItem>
           </SidebarSection>
           <SidebarSection label="Folders">
-            <SidebarItem icon={<FolderIcon />} badge={<SidebarCount>11</SidebarCount>}>Finance</SidebarItem>
-            <SidebarItem icon={<FolderIcon />} badge={<SidebarCount>4</SidebarCount>}>People ops</SidebarItem>
-            <SidebarItem icon={<FolderIcon />} badge={<SidebarCount>4</SidebarCount>}>IT & access</SidebarItem>
+            <SidebarFolder icon={<FolderIcon />} label="Finance" badge={<SidebarCount>11</SidebarCount>} defaultOpen>
+              <SidebarItem size="sm" badge={<SidebarCount>6</SidebarCount>}>Month-end close</SidebarItem>
+              <SidebarItem size="sm" badge={<span className="flex items-center gap-1.5"><StatusDot tone="destructive" /><SidebarCount className="px-0">3</SidebarCount></span>}>Settlement sync</SidebarItem>
+              <SidebarItem size="sm" badge={<SidebarCount>2</SidebarCount>}>Vendors</SidebarItem>
+            </SidebarFolder>
+            <SidebarFolder icon={<FolderIcon />} label="People ops" badge={<SidebarCount>4</SidebarCount>}>
+              <SidebarItem size="sm" badge={<SidebarCount>3</SidebarCount>}>Onboarding</SidebarItem>
+              <SidebarItem size="sm" badge={<SidebarCount>1</SidebarCount>}>Payroll</SidebarItem>
+            </SidebarFolder>
+            <SidebarFolder icon={<FolderIcon />} label="IT & access" badge={<SidebarCount>4</SidebarCount>}>
+              <SidebarItem size="sm" badge={<SidebarCount>4</SidebarCount>}>Access audits</SidebarItem>
+            </SidebarFolder>
           </SidebarSection>
           <SidebarFooter>
             <SidebarItem icon={<SettingsIcon />}>Settings</SidebarItem>
@@ -225,9 +255,10 @@ export function DashboardBlock({ className }: { className?: string }) {
             <CardHeader className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <CardTitle>Runs today</CardTitle>
               <div className="flex flex-wrap items-center gap-3 font-mono text-[11px] text-muted-foreground">
-                <span className="flex items-center gap-1.5"><span className="size-2 rounded-[2px] bg-foreground/80" />done</span>
-                <span className="flex items-center gap-1.5"><span className="size-2 rounded-[2px] border border-dashed border-muted-foreground" />scheduled</span>
-                <span className="flex items-center gap-1.5"><span className="size-2 rounded-[2px] bg-highlight" />slow</span>
+                <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-foreground/80" />done</span>
+                <span className="flex items-center gap-1.5"><span className="size-2 rounded-full border border-muted-foreground" />scheduled</span>
+                <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-highlight" />slow</span>
+                <span>1 dot = {PER_DOT} runs</span>
               </div>
               <CardAction className="col-start-auto row-start-auto ml-auto">
                 <Button size="sm" variant="outline">Open run log <ArrowRightIcon /></Button>

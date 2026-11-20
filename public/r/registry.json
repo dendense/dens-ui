@@ -182,7 +182,8 @@
       "type": "registry:ui",
       "title": "Sidebar",
       "dependencies": [
-        "radix-ui"
+        "radix-ui",
+        "lucide-react"
       ],
       "registryDependencies": [
         "https://dendense.github.io/dens-ui/r/utils.json"
