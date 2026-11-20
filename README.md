@@ -91,7 +91,7 @@ document.documentElement.classList.toggle("dark", prefersDark)
 
 ## Using the style
 
-The full guide is in [docs/STYLE-GUIDE.md](docs/STYLE-GUIDE.md). The short version:
+The full guide is in [docs/STYLE-GUIDE.md](docs/STYLE-GUIDE.md), and the machine-readable design system (tokens in frontmatter, named rules) is in [DESIGN.md](DESIGN.md). The short version:
 
 | Token (CSS variable) | Tailwind class | Light | Dark | Use it for |
 | --- | --- | --- | --- | --- |
