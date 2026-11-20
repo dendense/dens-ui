@@ -262,6 +262,56 @@ export const components: ComponentDoc[] = [
       { prop: "SidebarMeter", type: "label, total?, levels: number[]", note: "One tick per period, newest at the bottom in the highlight colour." },
     ],
   },
+  {
+    slug: "navbar",
+    name: "Navbar",
+    description: "The header pill: brand, links with an active marker, actions, and a menu that takes over below md. Solid, glass (over photos) and ink.",
+    demos: [{ file: "navbar" }],
+    usage: `import { Navbar, NavbarBrand, NavbarLinks, NavbarLink, NavbarActions, NavbarMenu } from "@/components/ui/navbar"
+
+<Navbar variant="glass">
+  <NavbarBrand href="/">Lembar</NavbarBrand>
+  <NavbarLinks>
+    <NavbarLink href="/" active>Discover</NavbarLink>
+    <NavbarLink href="/stories">Stories</NavbarLink>
+  </NavbarLinks>
+  <NavbarActions>
+    <Button>Start a story</Button>
+    <NavbarMenu>
+      <DropdownMenuItem asChild><a href="/">Discover</a></DropdownMenuItem>
+    </NavbarMenu>
+  </NavbarActions>
+</Navbar>`,
+    api: [
+      { prop: "variant", type: '"solid" | "glass" | "ink"', default: '"solid"', note: "Glass is for sitting on a photo; keep a scrim under it." },
+      { prop: "NavbarLink active", type: "boolean", note: "Sets aria-current=page and shows the 16 × 2 marker." },
+      { prop: "NavbarMenu", type: "children: DropdownMenuItem[]", note: "Shown below md, where NavbarLinks hide." },
+    ],
+    notes: ["Height 56, inner padding 8: 40px actions keep the corners concentric (28 = 20 + 8)."],
+  },
+  {
+    slug: "footer",
+    name: "Footer",
+    description: "Site footer parts: brand, link columns and a bottom bar, in a panel or near-black ink.",
+    demos: [{ file: "footer", align: "start" }],
+    usage: `import { Footer, FooterTop, FooterBrand, FooterColumns, FooterColumn, FooterLink, FooterBottom } from "@/components/ui/footer"
+
+<Footer variant="ink">
+  <FooterTop>
+    <FooterBrand>…</FooterBrand>
+    <FooterColumns>
+      <FooterColumn title="Product">
+        <FooterLink href="/changelog">Changelog</FooterLink>
+      </FooterColumn>
+    </FooterColumns>
+  </FooterTop>
+  <FooterBottom>© 2026 Lumbung</FooterBottom>
+</Footer>`,
+    api: [
+      { prop: "variant", type: '"default" | "ink"', default: '"default"' },
+      { prop: "FooterColumn title", type: "string", note: "Rendered as a heading that labels its list." },
+    ],
+  },
   { slug: "separator", name: "Separator", description: "A 1px rule, horizontal or vertical.", demos: [{ file: "separator" }], usage: `import { Separator } from "@/components/ui/separator"
 
 <Separator orientation="vertical" />` },
@@ -277,7 +327,7 @@ export const componentGroups: { label: string; slugs: string[] }[] = [
   { label: "Actions", slugs: ["button", "dropdown-menu", "dialog", "tooltip"] },
   { label: "Forms", slugs: ["input", "textarea", "label", "checkbox", "radio-group", "switch", "select"] },
   { label: "Display", slugs: ["card", "badge", "avatar", "table", "progress", "alert", "kbd", "skeleton", "separator"] },
-  { label: "Navigation", slugs: ["sidebar", "tabs"] },
+  { label: "Navigation", slugs: ["navbar", "sidebar", "tabs", "footer"] },
 ]
 
 /** registry dependencies used by the install instructions */

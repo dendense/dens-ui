@@ -340,6 +340,28 @@ Run counts per hour are stacked dots, one dot per three runs: done hours in Ink 
 - **Nested corners:** where an element hugs its container's corner, outer radius = inner radius + padding. Examples: Sidebar 28 = item 18 + 10; rail 22 = item 14 + 8; dialog close button 16 + inset 12 = 28; select and menu 18 = item 14 + 4; Kbd in an input 6 + 8 = 14; dashboard main 34 = card 22 + 12 and frame 46 = 34 + 12.
 - **Charts on buckets:** dot columns sit at bucket centres, x = (h + ½)·col. Time markers sit on bucket boundaries, x = h·col, the middle of the gutter, so a full-height line never touches a dot. Axis labels sit under column centres.
 
+### Navbar and Footer
+- **Navbar:** a 56px pill with 8px inner padding, so 40px actions keep the corners concentric (28 = 20 + 8). It comes in three variants:
+  - **Solid:** a white panel.
+  - **Glass:** translucent ink with blur, used only over photos and always with a scrim beneath.
+  - **Ink:** the rail colour.
+  
+  Active links get a 16 × 2 bar under the label. Below md, the links collapse into a menu.
+- **Footer:** a panel or near-black ink at 40px radius, with link columns titled in 13px semibold.
+  - **Sheet footer:** ends in a 1200 × 300 palette-sheet strip built from the same arc geometry (gap 16, R 48, rTail 48, which must stay ≤ H − R − yb).
+
+### Hero blocks
+- **Container and inset:** the container is 40 radius with a 12 inset, so inner frames and the navbar are 28. Copy sits 40 from the frame edge.
+- **Photo hero:** full-bleed image with a scrim that keeps white type above 4.5:1, plus an ink band.
+- **Split hero:** headline with one Mars Green phrase beside a framed image. The floating cards are 16 radius (28 − 12), with 10-radius thumbnails (16 − 6).
+
+### Empty image slots: the dot-matrix cat
+When a banner file is missing, the slot shows a dot matrix in which a cat face assembles.
+- **Live (three.js):** dots fly in over 2.4 s, timed in seconds rather than frames. The background ripples while the face holds still. The eyes are Hermès orange and blink for 180 ms every 3–6 s, and the view orbits up to ±4° with the pointer.
+- **Frame rate and motion:** the animation pauses offscreen and in hidden tabs, and renders a single frame under reduced motion.
+- **Thumbnails:** use the same cat as a static SVG.
+- **Narrow slots** (aspect < 1.1): the cat moves to a band at the top, with ear tips at y = 0.80 and the lowest whisker at 0.41, so it never sits behind the copy.
+
 ### Motion
 Overlays pop in over 180ms (4px rise, 0.97 scale) on `cubic-bezier(0.16, 1, 0.3, 1)` and leave over 120ms ease-in. With reduced motion every animation and transition collapses to 1ms.
 

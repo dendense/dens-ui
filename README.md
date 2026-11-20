@@ -6,8 +6,8 @@ Built on Radix primitives and Tailwind CSS v4.
 
 **Docs and live previews:** https://dendense.github.io/dens-ui
 
-- 22 components: Button, Badge, Card, Input, Textarea, Label, Checkbox, Switch, Radio Group, Select, Tabs, Dialog, Dropdown Menu, Tooltip, Avatar, Progress, Alert, Table, Sidebar (with folders, an icon rail and a 24h meter), Separator, Kbd, Skeleton
-- 3 blocks: an ops dashboard, a split login screen, two mobile app screens
+- 24 components: Button, Badge, Card, Input, Textarea, Label, Checkbox, Switch, Radio Group, Select, Tabs, Dialog, Dropdown Menu, Tooltip, Avatar, Progress, Alert, Table, Navbar, Footer, Sidebar (with folders, an icon rail and a 24h meter), Separator, Kbd, Skeleton
+- 5 blocks: hero (photo and split), footer (sheet and simple), an ops dashboard, a split login screen, two mobile app screens
 - A shadcn-compatible registry, so `npx shadcn add <url>` installs any of it
 - Light and dark mode from one stylesheet, with the same token names shadcn/ui uses
 
@@ -140,6 +140,14 @@ scripts/build-registry.mjs   writes public/r/*.json for the shadcn CLI
 ```
 
 Pushing to `main` builds the site and deploys it to GitHub Pages (`.github/workflows/deploy.yml`).
+
+### Banner images for the Hero blocks
+
+The Hero blocks look for photos in `src/site/assets/local/` (`hero-photo`, `thumb-1`, `hero-portrait`, `portrait-thumb`, as `.jpg`, `.png` or `.webp`). That folder is **gitignored**: drop in your own or licensed photos for local work, and they never reach the public repo.
+
+When a file is missing, as on the public site, the slot shows a dot-matrix cat instead:
+- **Large slots:** the cat is animated with three.js. three.js is lazy-loaded in its own chunk, the animation pauses offscreen, and it renders one still frame under `prefers-reduced-motion`.
+- **Thumbnails:** a static SVG of the same cat.
 
 ---
 

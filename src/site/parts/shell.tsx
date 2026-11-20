@@ -78,6 +78,8 @@ const docsNav = [
     label: "Blocks",
     items: [
       { to: "/blocks/dashboard", label: "Dashboard" },
+      { to: "/blocks/hero", label: "Hero" },
+      { to: "/blocks/footer", label: "Footer" },
       { to: "/blocks/login", label: "Login" },
       { to: "/blocks/mobile", label: "Mobile" },
     ],

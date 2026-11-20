@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "footer",
+  "type": "registry:ui",
+  "title": "Footer",
+  "dependencies": [
+    "radix-ui"
+  ],
+  "registryDependencies": [
+    "https://dendense.github.io/dens-ui/r/utils.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/footer.tsx",
+      "type": "registry:ui",
+      "content": "import * as React from \"react\"\nimport { Slot } from \"radix-ui\"\n\nimport { cn } from \"@/lib/utils\"\n\n/**\n * Site footer.\n *  - \"default\": a panel on the page ground\n *  - \"ink\":     near-black, the palette sheet's frame colour, in both themes\n */\ntype Variant = \"default\" | \"ink\"\nconst FooterContext = React.createContext<Variant>(\"default\")\n\nfunction Footer({ className, variant = \"default\", ...props }: React.ComponentProps<\"footer\"> & { variant?: Variant }) {\n  return (\n    <FooterContext.Provider value={variant}>\n      <footer\n        data-slot=\"footer\"\n        data-variant={variant}\n        className={cn(\n          \"group/footer flex flex-col gap-12 rounded-[40px] p-8 sm:p-12\",\n          variant === \"default\" && \"bg-card text-card-foreground ring-1 ring-border/60\",\n          variant === \"ink\" && \"bg-[#0c0b0b] text-[#ecf2f0] ring-1 ring-white/8\",\n          className\n        )}\n        {...props}\n      />\n    </FooterContext.Provider>\n  )\n}\n\nfunction FooterTop({ className, ...props }: React.ComponentProps<\"div\">) {\n  return (\n    <div\n      data-slot=\"footer-top\"\n      className={cn(\"grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:gap-16\", className)}\n      {...props}\n    />\n  )\n}\n\nfunction FooterBrand({ className, ...props }: React.ComponentProps<\"div\">) {\n  return <div data-slot=\"footer-brand\" className={cn(\"flex max-w-sm flex-col gap-5\", className)} {...props} />\n}\n\nfunction FooterColumns({ className, ...props }: React.ComponentProps<\"div\">) {\n  return <div data-slot=\"footer-columns\" className={cn(\"grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-4\", className)} {...props} />\n}\n\nfunction FooterColumn({ title, className, children, ...props }: React.ComponentProps<\"div\"> & { title: string }) {\n  const id = React.useId()\n  return (\n    <div data-slot=\"footer-column\" className={cn(\"flex flex-col gap-3.5\", className)} {...props}>\n      <h3 id={id} className=\"text-[13px] font-semibold\">\n        {title}\n      </h3>\n      <ul aria-labelledby={id} className=\"flex flex-col gap-2.5\">\n        {children}\n      </ul>\n    </div>\n  )\n}\n\nfunction FooterLink({ className, asChild = false, ...props }: React.ComponentProps<\"a\"> & { asChild?: boolean }) {\n  const variant = React.useContext(FooterContext)\n  const Comp = asChild ? Slot.Root : \"a\"\n  return (\n    <li>\n      <Comp\n        data-slot=\"footer-link\"\n        className={cn(\n          \"rounded-sm text-sm underline-offset-4 outline-none transition-colors hover:underline focus-visible:ring-2 focus-visible:ring-ring\",\n          variant === \"ink\" ? \"text-[#ecf2f0]/70 hover:text-[#ecf2f0]\" : \"text-muted-foreground hover:text-foreground\",\n          className\n        )}\n        {...props}\n      />\n    </li>\n  )\n}\n\nfunction FooterBottom({ className, ...props }: React.ComponentProps<\"div\">) {\n  const variant = React.useContext(FooterContext)\n  return (\n    <div\n      data-slot=\"footer-bottom\"\n      className={cn(\n        \"flex flex-col gap-4 border-t pt-6 text-[13px] sm:flex-row sm:items-center sm:justify-between\",\n        variant === \"ink\" ? \"border-white/10 text-[#ecf2f0]/70\" : \"border-border text-muted-foreground\",\n        className\n      )}\n      {...props}\n    />\n  )\n}\n\nexport { Footer, FooterTop, FooterBrand, FooterColumns, FooterColumn, FooterLink, FooterBottom }\n"
+    }
+  ]
+}

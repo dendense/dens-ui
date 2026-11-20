@@ -104,6 +104,17 @@
       ]
     },
     {
+      "name": "footer",
+      "type": "registry:ui",
+      "title": "Footer",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
       "name": "input",
       "type": "registry:ui",
       "title": "Input",
@@ -130,6 +141,19 @@
       ],
       "registryDependencies": [
         "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "navbar",
+      "type": "registry:ui",
+      "title": "Navbar",
+      "dependencies": [
+        "radix-ui",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json",
+        "https://dendense.github.io/dens-ui/r/dropdown-menu.json"
       ]
     },
     {
