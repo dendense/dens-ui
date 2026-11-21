@@ -68,6 +68,7 @@ const docsNav = [
       { to: "/docs/introduction", label: "Introduction" },
       { to: "/docs/installation", label: "Installation" },
       { to: "/docs/theming", label: "Theming" },
+      { to: "/docs/desktop", label: "Desktop apps" },
     ],
   },
   ...componentGroups.map((g) => ({

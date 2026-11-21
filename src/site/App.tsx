@@ -4,6 +4,7 @@ import { usePath } from "./lib"
 import { DocsLayout, Footer, TopBar } from "./parts/shell"
 import { HomePage } from "./pages/home"
 import { ComponentPage, InstallationPage, IntroductionPage, NotFound, ThemingPage } from "./pages/docs"
+import { DesktopPage } from "./pages/desktop"
 import { BlockPage, isBlock } from "./pages/blocks"
 
 function Route({ path }: { path: string }) {
@@ -12,6 +13,7 @@ function Route({ path }: { path: string }) {
   if (path === "/docs" || path === "/docs/introduction") page = <IntroductionPage />
   else if (path === "/docs/installation") page = <InstallationPage />
   else if (path === "/docs/theming") page = <ThemingPage />
+  else if (path === "/docs/desktop") page = <DesktopPage />
   else if (path.startsWith("/docs/components/")) {
     const slug = path.slice("/docs/components/".length)
     page = <ComponentPage key={slug} slug={slug} />

@@ -12,7 +12,7 @@ import { PaletteSheet, sheetPairs } from "../parts/palette-sheet"
 import themeCss from "@/styles/dens-ui.css?raw"
 import utilsSource from "@/lib/utils.ts?raw"
 
-function Pager({ prev, next }: { prev?: { to: string; label: string }; next?: { to: string; label: string } }) {
+export function Pager({ prev, next }: { prev?: { to: string; label: string }; next?: { to: string; label: string } }) {
   return (
     <div className="mt-16 flex justify-between gap-4 border-t border-border pt-6">
       {prev ? (
@@ -251,7 +251,7 @@ export function ThemingPage() {
 
       <H2>The stylesheet</H2>
       <CodeBlock code={themeCss} lang="css" title="src/styles/dens-ui.css" maxHeight={520} />
-      <Pager prev={{ to: "/docs/installation", label: "Installation" }} next={{ to: "/docs/components/button", label: "Button" }} />
+      <Pager prev={{ to: "/docs/installation", label: "Installation" }} next={{ to: "/docs/desktop", label: "Desktop apps" }} />
     </article>
   )
 }

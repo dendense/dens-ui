@@ -87,6 +87,31 @@ Class-based. Put `dark` on `<html>`:
 document.documentElement.classList.toggle("dark", prefersDark)
 ```
 
+### Desktop apps
+
+Dens-UI runs unchanged in any desktop shell that renders a webview. Full guide: [Desktop apps](https://dendense.github.io/dens-ui/#/docs/desktop).
+
+| Shell | Language | What you reuse |
+| --- | --- | --- |
+| Tauri 2 | Rust | Everything: theme, components, blocks |
+| Electron | JS / TS | Everything |
+| Wails | Go | Everything |
+| Dioxus, Leptos | Rust | `dens-ui.css` and the class names; components are rewritten in RSX |
+| egui, iced, Slint, GTK 4 | Rust | Colour, radius and spacing values only |
+
+Tauri in short:
+
+```bash
+npm create tauri-app@latest my-app -- --template react-ts --manager npm
+cd my-app && npm install
+npm install tailwindcss @tailwindcss/vite
+npx shadcn@latest init
+npx shadcn@latest add https://dendense.github.io/dens-ui/r/theme.json https://dendense.github.io/dens-ui/r/all.json
+npm run tauri dev
+```
+
+Add `tailwindcss()` and the `@` alias to `vite.config.ts`, and keep Vite's default `base` (`/`). This repo uses `base: "/dens-ui/"` only for GitHub Pages. On Linux the webview is WebKitGTK: if `backdrop-blur` (Dialog overlay, glass Navbar) is slow on your GPU, swap it for a solid `bg-card`.
+
 ---
 
 ## Using the style
@@ -157,7 +182,8 @@ When a file is missing, as on the public site, the slot shows a dot-matrix cat i
 2. Pasang tema: `npx shadcn@latest add https://dendense.github.io/dens-ui/r/theme.json`, lalu impor `dens-ui.css` setelah `@import "tailwindcss"` di CSS global.
 3. Pasang komponen satu per satu, misalnya `npx shadcn@latest add https://dendense.github.io/dens-ui/r/button.json`, atau semuanya lewat `all.json`.
 4. Mode gelap: tambahkan class `dark` pada `<html>`.
-5. Aturan gaya: hijau Mars untuk aksi utama, oranye Hermès hanya untuk hal yang menunggu tindakan pengguna, satu panel `brand` per layar. Detail lengkap ada di [docs/STYLE-GUIDE.md](docs/STYLE-GUIDE.md).
+5. Aplikasi desktop: pakai Tauri (Rust), Electron, atau Wails. Komponen jalan apa adanya di webview. Dioxus/Leptos hanya memakai `dens-ui.css` dan class-nya. egui/iced/GTK hanya memakai nilai warna dan radius. Panduan: [Desktop apps](https://dendense.github.io/dens-ui/#/docs/desktop).
+6. Aturan gaya: hijau Mars untuk aksi utama, oranye Hermès hanya untuk hal yang menunggu tindakan pengguna, satu panel `brand` per layar. Detail lengkap ada di [docs/STYLE-GUIDE.md](docs/STYLE-GUIDE.md).
 
 ---
 
