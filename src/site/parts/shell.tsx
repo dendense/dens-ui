@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Link, REPO_URL, setTheme, usePath, useTheme } from "../lib"
 import { componentGroups, components } from "../catalog"
 import { GitHubIcon, Mark } from "./brand"
+import { BuyMeACoffee } from "./donate"
 
 function ThemeToggle() {
   const theme = useTheme()
@@ -48,7 +49,8 @@ export function TopBar() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-1">
-          <span className="mr-2 hidden font-mono text-xs text-muted-foreground sm:inline">v0.1.0</span>
+          <span className="mr-2 hidden font-mono text-xs text-muted-foreground lg:inline">v0.1.0</span>
+          <BuyMeACoffee />
           <ThemeToggle />
           <Button variant="ghost" size="icon" asChild>
             <a href={REPO_URL} aria-label="Dens-UI on GitHub" target="_blank" rel="noreferrer">
@@ -162,7 +164,13 @@ export function Footer() {
       <div className="mx-auto flex max-w-[1400px] flex-col gap-3 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <div className="flex items-center gap-2.5">
           <Mark className="size-5" />
-          <span>Dens-UI by Denslab · MIT licensed</span>
+          <span>
+            Dens-UI by{" "}
+            <a href="https://dendense.vercel.app/" target="_blank" rel="noreferrer" className="font-semibold text-foreground underline-offset-4 hover:underline">
+              Denslab
+            </a>{" "}
+            · MIT licensed
+          </span>
         </div>
         <div className="flex gap-5">
           <a className="hover:text-foreground" href={REPO_URL}>GitHub</a>

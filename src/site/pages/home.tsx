@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { componentGroups, components } from "../catalog"
 import { Link, REGISTRY_URL } from "../lib"
 import { CopyButton } from "../parts/code"
 import { PaletteSheet, sheetPairs } from "../parts/palette-sheet"
 import { DashboardBlock } from "../blocks/dashboard"
 import { LoginBlock } from "../blocks/login"
+import { HeroPhoto, HeroSplit } from "../blocks/hero"
 
 function InstallLine() {
   const cmd = `npx shadcn@latest add ${REGISTRY_URL}/button.json`
@@ -135,6 +136,36 @@ export function HomePage() {
           <DashboardBlock />
           <p className="mt-3 text-[13px] text-muted-foreground">Demo data. Lumbung is a fictional workspace; its people and figures are invented.</p>
         </div>
+      </section>
+
+      {/* Hero / header blocks */}
+      <section className="mx-auto max-w-[1400px] px-4 py-20 sm:px-6">
+        <Tabs defaultValue="photo" className="gap-8">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div className="max-w-[60ch]">
+              <h2 className="text-[34px] font-bold leading-tight tracking-[-0.035em]">Headers that open a page</h2>
+              <p className="mt-2 text-[16px] leading-relaxed text-muted-foreground">
+                Two hero blocks built from Navbar, Button and Card: a full-bleed photo with a glass navbar, and a split layout with
+                cards floating on the image. Your photos go where the dot-matrix cat sits.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <TabsList aria-label="Hero variant">
+                <TabsTrigger value="photo">Photo</TabsTrigger>
+                <TabsTrigger value="split">Split</TabsTrigger>
+              </TabsList>
+              <Button variant="outline" asChild>
+                <Link to="/blocks/hero">View block source <ArrowRightIcon /></Link>
+              </Button>
+            </div>
+          </div>
+          <TabsContent value="photo">
+            <HeroPhoto />
+          </TabsContent>
+          <TabsContent value="split">
+            <HeroSplit />
+          </TabsContent>
+        </Tabs>
       </section>
 
       {/* Index */}
