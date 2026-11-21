@@ -222,6 +222,7 @@
   --animate-fade-in: dens-fade-in 180ms ease-out;
   --animate-fade-out: dens-fade-out 120ms ease-in forwards;
   --animate-shimmer: dens-shimmer 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  --animate-eq: dens-eq 0.9s ease-in-out infinite;
 }
 
 @keyframes dens-pop-in {
@@ -239,6 +240,10 @@
 @keyframes dens-shimmer {
   from { background-position: 150% 0; }
   to { background-position: -50% 0; }
+}
+@keyframes dens-eq {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
 }
 
 @layer base {

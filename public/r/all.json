@@ -19,6 +19,7 @@
     "https://dendense.github.io/dens-ui/r/input.json",
     "https://dendense.github.io/dens-ui/r/kbd.json",
     "https://dendense.github.io/dens-ui/r/label.json",
+    "https://dendense.github.io/dens-ui/r/music-player.json",
     "https://dendense.github.io/dens-ui/r/navbar.json",
     "https://dendense.github.io/dens-ui/r/post-card.json",
     "https://dendense.github.io/dens-ui/r/progress.json",
@@ -27,11 +28,13 @@
     "https://dendense.github.io/dens-ui/r/separator.json",
     "https://dendense.github.io/dens-ui/r/sidebar.json",
     "https://dendense.github.io/dens-ui/r/skeleton.json",
+    "https://dendense.github.io/dens-ui/r/slider.json",
     "https://dendense.github.io/dens-ui/r/switch.json",
     "https://dendense.github.io/dens-ui/r/table.json",
     "https://dendense.github.io/dens-ui/r/tabs.json",
     "https://dendense.github.io/dens-ui/r/textarea.json",
-    "https://dendense.github.io/dens-ui/r/tooltip.json"
+    "https://dendense.github.io/dens-ui/r/tooltip.json",
+    "https://dendense.github.io/dens-ui/r/video-player.json"
   ],
   "files": []
 }

@@ -447,13 +447,104 @@ export const components: ComponentDoc[] = [
       "Lines are 2px, columns at most 24px wide with a 4px rounded end, and touching marks keep a 2px gap.",
     ],
   },
+  {
+    slug: "slider",
+    name: "Slider",
+    description: "Pick a value or a range on a track. Also the scrubber and volume control of the media players.",
+    demos: [{ file: "slider" }],
+    usage: `import { Slider } from "@/components/ui/slider"
+
+<Slider defaultValue={[45]} aria-label="Budget" />
+<Slider defaultValue={[20, 70]} tone="highlight" aria-label="Price" />
+<Slider size="sm" tone="white" value={[time]} max={duration} buffered={loaded} aria-label="Seek" />`,
+    api: [
+      { prop: "value / defaultValue", type: "number[]", note: "One value for a single thumb, two for a range." },
+      { prop: "min, max, step", type: "number", default: "0, 100, 1" },
+      { prop: "size", type: '"default" | "sm"', default: '"default"', note: "sm is the 4px media track; its thumb appears on hover or focus." },
+      { prop: "tone", type: '"primary" | "highlight" | "ink" | "white"', default: '"primary"', note: "white is for controls laid over video." },
+      { prop: "buffered", type: "number", note: "Media only: a second, quieter fill for what has loaded." },
+      { prop: "onValueChange / onValueCommit", type: "(value: number[]) => void", note: "Commit fires once when the drag or key press ends." },
+    ],
+    notes: [
+      "Built on Radix Slider: arrow keys step, Page Up and Page Down take big steps, Home and End jump to the ends.",
+      "aria-label and aria-valuetext go on the thumb, which is the element screen readers announce. Give a range two names by passing one label; the thumbs read it as minimum and maximum.",
+    ],
+  },
+  {
+    slug: "music-player",
+    name: "Music Player",
+    description: "An audio player with a queue: a Now Playing card, a compact row, an app bottom bar and a playlist that share one <audio> element.",
+    demos: [
+      { file: "music-player", title: "Card and playlist", align: "start" },
+      { file: "music-player-mini", title: "Mini" },
+      { file: "music-player-bar", title: "Bottom bar", align: "start" },
+    ],
+    usage: `import { MusicPlayer, MusicPlayerProvider, MusicPlaylist, type Track } from "@/components/ui/music-player"
+
+const tracks: Track[] = [
+  { title: "Morning Tide", artist: "Kala Senja", src: "/media/morning-tide.m4a", cover: "/covers/tide.jpg" },
+  { title: "Late Tram", artist: "Arus Pelan", src: "/media/late-tram.m4a", cover: "/covers/tram.jpg" },
+]
+
+// one player on its own
+<MusicPlayer tracks={tracks} variant="mini" />
+
+// a player and a playlist on the same queue
+<MusicPlayerProvider tracks={tracks}>
+  <MusicPlayer tone="ink" />
+  <MusicPlaylist />
+</MusicPlayerProvider>`,
+    api: [
+      { prop: "tracks", type: "Track[]", note: "{ title, artist, src, cover?, duration?, id? }. cover takes an image URL or any node." },
+      { prop: "variant", type: '"card" | "mini" | "bar"', default: '"card"' },
+      { prop: "tone", type: '"default" | "ink"', default: '"default"', note: "ink is the dark Now Playing surface." },
+      { prop: "actions", type: "ReactNode", note: "bar only: buttons after the volume, such as a queue toggle." },
+      { prop: "MusicPlayerProvider", type: "{ tracks, initialIndex?, onTrackChange? }", note: "Owns the audio element. Leave tracks off the players inside it." },
+      { prop: "useMusicPlayer()", type: "PlayerState", note: "play(i), pause, toggle, next, prev, seek(s), setVolume, toggleShuffle, cycleRepeat and the current state." },
+    ],
+    notes: [
+      "Previous restarts the track when more than 3 seconds have played, then goes back a track: the way people expect it from their phone.",
+      "Repeat cycles off, all, one. Shuffle never picks the track that is playing.",
+      "The player registers with the Media Session API, so media keys and the lock screen show the track and control it.",
+      "The equalizer bars stop moving under prefers-reduced-motion. A file that fails to load says so in place of the artist.",
+      "The demo music was synthesised for Dens-UI; use your own files in production.",
+    ],
+  },
+  {
+    slug: "video-player",
+    name: "Video Player",
+    description: "The native <video> element under Dens-UI controls: scrubber with buffer, volume, speed, captions, picture in picture and full screen.",
+    demos: [{ file: "video-player" }],
+    usage: `import { VideoPlayer } from "@/components/ui/video-player"
+
+<VideoPlayer
+  src="/media/launch.mp4"
+  poster="/media/launch.jpg"
+  title="Launch day, in two minutes"
+  captions={[{ src: "/media/launch.en.vtt", srclang: "en", label: "English" }]}
+/>`,
+    api: [
+      { prop: "src, poster", type: "string" },
+      { prop: "title", type: "string", note: "Shown top-left with the controls and used as the accessible name." },
+      { prop: "captions", type: "{ src, srclang, label, default? }[]", note: "WebVTT tracks. Adds a captions toggle." },
+      { prop: "aspect", type: "string", default: '"16 / 9"' },
+      { prop: "autoPlay, loop, muted", type: "boolean", note: "Browsers only autoplay muted video." },
+    ],
+    notes: [
+      "Keys while the player has focus: Space or K play and pause, J and L skip 10 s, ← and → skip 5 s, ↑ and ↓ change volume, M mutes, F goes full screen, C toggles captions.",
+      "Controls stay up while paused, while the pointer moves and while focus is inside the player; during playback they fade out after 2.5 s.",
+      "The speed menu renders inside the player, so it still opens in full screen.",
+      "Click the picture to play or pause; double-click for full screen.",
+    ],
+  },
 ]
 
 export const componentGroups: { label: string; slugs: string[] }[] = [
   { label: "Actions", slugs: ["button", "dropdown-menu", "dialog", "tooltip"] },
-  { label: "Forms", slugs: ["input", "textarea", "label", "checkbox", "radio-group", "switch", "select"] },
+  { label: "Forms", slugs: ["input", "textarea", "label", "checkbox", "radio-group", "switch", "select", "slider"] },
   { label: "Display", slugs: ["card", "post-card", "badge", "avatar", "alert", "kbd", "skeleton", "separator", "divider"] },
   { label: "Data", slugs: ["chart", "table", "progress"] },
+  { label: "Media", slugs: ["music-player", "video-player"] },
   { label: "Navigation", slugs: ["navbar", "sidebar", "tabs", "footer"] },
 ]
 

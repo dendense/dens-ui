@@ -166,6 +166,18 @@
       ]
     },
     {
+      "name": "music-player",
+      "type": "registry:ui",
+      "title": "Music Player",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json",
+        "https://dendense.github.io/dens-ui/r/slider.json"
+      ]
+    },
+    {
       "name": "navbar",
       "type": "registry:ui",
       "title": "Navbar",
@@ -259,6 +271,17 @@
       ]
     },
     {
+      "name": "slider",
+      "type": "registry:ui",
+      "title": "Slider",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
       "name": "switch",
       "type": "registry:ui",
       "title": "Switch",
@@ -309,6 +332,19 @@
       ],
       "registryDependencies": [
         "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "video-player",
+      "type": "registry:ui",
+      "title": "Video Player",
+      "dependencies": [
+        "radix-ui",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json",
+        "https://dendense.github.io/dens-ui/r/slider.json"
       ]
     }
   ]
