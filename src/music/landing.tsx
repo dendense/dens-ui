@@ -90,7 +90,7 @@ function Landing() {
       <main className="px-4 pb-40 pt-7 sm:px-8 sm:pt-10 md:px-[12vw] md:pt-[5vh]">
         <section ref={column} aria-labelledby="headline" className="sky-type max-w-[440px]">
           <h1 id="headline" className="text-balance text-[34px] font-bold leading-[1.05] tracking-[-0.035em] sm:text-[44px]">
-            The petals are in no hurry.
+            Relax and Chill...
           </h1>
           <p className="mt-3 max-w-[40ch] text-[15.5px] leading-[1.6] text-[color:var(--sky-ink-muted)]">
             Neither are we.
