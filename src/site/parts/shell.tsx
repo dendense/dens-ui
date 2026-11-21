@@ -49,7 +49,7 @@ export function TopBar() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-1">
-          <span className="mr-2 hidden font-mono text-xs text-muted-foreground lg:inline">v0.1.0</span>
+          <span className="mr-2 hidden font-mono text-xs text-muted-foreground lg:inline">v0.2.0</span>
           <BuyMeACoffee />
           <ThemeToggle />
           <Button variant="ghost" size="icon" asChild>

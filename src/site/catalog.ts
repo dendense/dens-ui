@@ -318,15 +318,142 @@ export const components: ComponentDoc[] = [
   { slug: "kbd", name: "Kbd", description: "Keyboard keys, for shortcut hints in menus, inputs and help text.", demos: [{ file: "kbd" }], usage: `import { Kbd } from "@/components/ui/kbd"
 
 <Kbd>⌘K</Kbd>` },
-  { slug: "skeleton", name: "Skeleton", description: "A loading placeholder in the muted tone.", demos: [{ file: "skeleton" }], usage: `import { Skeleton } from "@/components/ui/skeleton"
+  {
+    slug: "skeleton",
+    name: "Skeleton",
+    description: "Loading placeholders that keep the final shape: plain blocks, text lines, images and whole post cards.",
+    demos: [
+      { file: "skeleton" },
+      { file: "skeleton-image", title: "Images and text" },
+      { file: "skeleton-post", title: "Post cards", align: "start" },
+    ],
+    usage: `import { Skeleton, SkeletonText, SkeletonImage, SkeletonPostCard } from "@/components/ui/skeleton"
 
-<Skeleton className="h-4 w-40" />` },
+<Skeleton className="h-4 w-40" />
+<SkeletonText lines={3} />
+<SkeletonImage ratio="16 / 9" />
+<SkeletonPostCard layout="horizontal" />`,
+    api: [
+      { prop: "variant", type: '"pulse" | "shimmer"', default: '"pulse"', note: "SkeletonImage and the image in SkeletonPostCard default to shimmer." },
+      { prop: "SkeletonText lines", type: "number", default: "3", note: "The last line is 60% wide." },
+      { prop: "SkeletonImage ratio", type: "string", default: '"16 / 9"', note: "Any CSS aspect-ratio. Match the image that will replace it, so nothing jumps." },
+      { prop: "SkeletonImage icon", type: "boolean", default: "true" },
+      { prop: "SkeletonPostCard layout", type: '"stacked" | "horizontal"', default: '"stacked"', note: "Same geometry as PostCard." },
+    ],
+    notes: [
+      "Skeletons are hidden from assistive tech. SkeletonPostCard has role=\"status\" and a visually hidden \"Loading post\" label.",
+      "Both animations stop under prefers-reduced-motion.",
+    ],
+  },
+  {
+    slug: "post-card",
+    name: "Post Card",
+    description: "An image-led card for blog posts, articles and case studies, in stacked, horizontal and overlay layouts.",
+    demos: [
+      { file: "post-card", align: "start" },
+      { file: "post-card-layouts", title: "Horizontal and overlay", align: "start" },
+    ],
+    usage: `import {
+  PostCard, PostCardMedia, PostCardBody, PostCardMeta, PostCardTag,
+  PostCardDot, PostCardTitle, PostCardExcerpt, PostCardFooter,
+} from "@/components/ui/post-card"
+
+<PostCard layout="stacked">
+  <PostCardMedia ratio="16 / 10">
+    <img src="/covers/retries.jpg" alt="" />
+  </PostCardMedia>
+  <PostCardBody>
+    <PostCardMeta>
+      <PostCardTag>Engineering</PostCardTag>
+      <span>6 min read</span>
+    </PostCardMeta>
+    <PostCardTitle href="/blog/retries">How we cut settlement retries by half</PostCardTitle>
+    <PostCardExcerpt>Backing off on the bank API's own schedule…</PostCardExcerpt>
+    <PostCardFooter>
+      <strong>Nadia Rahma</strong> <PostCardDot /> <time>Nov 18</time>
+    </PostCardFooter>
+  </PostCardBody>
+</PostCard>`,
+    api: [
+      { prop: "layout", type: '"stacked" | "horizontal" | "overlay"', default: '"stacked"', note: "Horizontal puts the image beside the text from the sm breakpoint. Overlay sets the text on the image over a dark scrim." },
+      { prop: "PostCardMedia ratio", type: "string", default: '"16 / 10"', note: "Ignored by overlay; horizontal cards stretch the image to the text height from sm up." },
+      { prop: "PostCardTitle href", type: "string", note: "The link stretches over the whole card. Links inside PostCardTag stay clickable." },
+      { prop: "PostCardTitle as", type: '"h2" | "h3" | "h4"', default: '"h3"' },
+    ],
+    notes: [
+      "Geometry: card radius 22 = image radius 14 + padding 8, so the corners stay concentric.",
+      "Cover images are decorative when the title says what the post is: give them alt=\"\".",
+      "The demo covers are the palette sheet re-cut to 16:10, not photos.",
+    ],
+  },
+  {
+    slug: "divider",
+    name: "Divider",
+    description: "The break between page sections: a hairline, a fading line, a labelled rule, three dots or the Mars Green mark.",
+    demos: [{ file: "divider" }],
+    usage: `import { Divider } from "@/components/ui/divider"
+
+<Divider />
+<Divider>Earlier this year</Divider>
+<Divider variant="fade" align="start"><SparklesIcon /> New in 0.2</Divider>
+<Divider variant="mark" spacing="lg" />`,
+    api: [
+      { prop: "variant", type: '"line" | "fade" | "dots" | "mark"', default: '"line"' },
+      { prop: "spacing", type: '"none" | "sm" | "md" | "lg"', default: '"md"', note: "Vertical margin: 24, 48 or 80px." },
+      { prop: "align", type: '"start" | "center" | "end"', default: '"center"', note: "Where the label sits on line and fade dividers." },
+      { prop: "children", type: "ReactNode", note: "Optional label. A plain string also becomes the accessible name." },
+    ],
+    notes: ["Use Separator for the 1px rule inside a component, and Divider between sections of a page."],
+  },
+  {
+    slug: "chart",
+    name: "Chart",
+    description: "SVG charts with no chart library: candlesticks for trading, area, bar, donut, ranked bars and a segmented share bar.",
+    demos: [
+      { file: "chart-candlestick", title: "Candlestick (trading)", align: "start" },
+      { file: "chart-area", title: "Area and line", align: "start" },
+      { file: "chart-bar", title: "Bar", align: "start" },
+      { file: "chart-donut", title: "Donut: share of sales", align: "start" },
+      { file: "chart-share", title: "Bar list and segmented bar", align: "start" },
+    ],
+    usage: `import { CandlestickChart, AreaChart, BarChart, DonutChart, BarList, SegmentedBar } from "@/components/ui/chart"
+
+<CandlestickChart data={candles} label="LMBG / IDR, daily" movingAveragePeriod={20} />
+
+<AreaChart
+  data={rows}
+  index="month"
+  series={[{ key: "online", name: "Online" }, { key: "store", name: "In store" }]}
+/>
+
+<DonutChart data={[{ name: "Coffee beans", value: 412 }, { name: "Gear", value: 268 }]} />`,
+    api: [
+      { prop: "CandlestickChart data", type: "{ time, open, high, low, close, volume? }[]" },
+      { prop: "CandlestickChart movingAveragePeriod", type: "number", note: "Draws a simple moving average of the close." },
+      { prop: "CandlestickChart showVolume", type: "boolean", default: "true" },
+      { prop: "Area / Bar data, index, series", type: "Row[], string, { key, name, color? }[]", note: "index names the x key in each row; series take --chart-1 … --chart-5 in order." },
+      { prop: "AreaChart area", type: "boolean", note: "Fill under the line. On by default for a single series." },
+      { prop: "DonutChart data", type: "{ name, value, color? }[]" },
+      { prop: "DonutChart centerLabel", type: "string", default: '"Total"' },
+      { prop: "BarList data", type: "{ name, value, href? }[]", note: "Ranked rows with value and share of the total." },
+      { prop: "SegmentedBar data", type: "{ name, value, color? }[]", note: "One whole; shares print inside a part when they fit." },
+      { prop: "valueFormatter / priceFormatter", type: "(n: number) => string", note: "Compact numbers by default (12.9K, 4.2M)." },
+      { prop: "label", type: "string", note: "Accessible name and caption of the hidden data table." },
+    ],
+    notes: [
+      "Series colours come in a fixed order and were checked for colour-blind separation in light and dark: --chart-1 teal, --chart-2 orange, --chart-3 blue, --chart-4 olive, --chart-5 magenta.",
+      "Candles use --chart-up and --chart-down. Up candles are hollow and down candles filled, so direction never depends on colour alone.",
+      "Every chart is focusable: the left and right arrow keys move the readout, Escape clears it. Each one also renders a visually hidden table of its data.",
+      "Lines are 2px, columns at most 24px wide with a 4px rounded end, and touching marks keep a 2px gap.",
+    ],
+  },
 ]
 
 export const componentGroups: { label: string; slugs: string[] }[] = [
   { label: "Actions", slugs: ["button", "dropdown-menu", "dialog", "tooltip"] },
   { label: "Forms", slugs: ["input", "textarea", "label", "checkbox", "radio-group", "switch", "select"] },
-  { label: "Display", slugs: ["card", "badge", "avatar", "table", "progress", "alert", "kbd", "skeleton", "separator"] },
+  { label: "Display", slugs: ["card", "post-card", "badge", "avatar", "alert", "kbd", "skeleton", "separator", "divider"] },
+  { label: "Data", slugs: ["chart", "table", "progress"] },
   { label: "Navigation", slugs: ["navbar", "sidebar", "tabs", "footer"] },
 ]
 

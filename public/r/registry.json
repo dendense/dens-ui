@@ -68,6 +68,17 @@
       ]
     },
     {
+      "name": "chart",
+      "type": "registry:ui",
+      "title": "Chart",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
       "name": "checkbox",
       "type": "registry:ui",
       "title": "Checkbox",
@@ -86,6 +97,17 @@
       "dependencies": [
         "radix-ui",
         "lucide-react"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
+      "name": "divider",
+      "type": "registry:ui",
+      "title": "Divider",
+      "dependencies": [
+        "class-variance-authority"
       ],
       "registryDependencies": [
         "https://dendense.github.io/dens-ui/r/utils.json"
@@ -157,6 +179,17 @@
       ]
     },
     {
+      "name": "post-card",
+      "type": "registry:ui",
+      "title": "Post Card",
+      "dependencies": [
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "https://dendense.github.io/dens-ui/r/utils.json"
+      ]
+    },
+    {
       "name": "progress",
       "type": "registry:ui",
       "title": "Progress",
@@ -217,7 +250,10 @@
       "name": "skeleton",
       "type": "registry:ui",
       "title": "Skeleton",
-      "dependencies": [],
+      "dependencies": [
+        "class-variance-authority",
+        "lucide-react"
+      ],
       "registryDependencies": [
         "https://dendense.github.io/dens-ui/r/utils.json"
       ]

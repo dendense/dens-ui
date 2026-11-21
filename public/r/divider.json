@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "divider",
+  "type": "registry:ui",
+  "title": "Divider",
+  "dependencies": [
+    "class-variance-authority"
+  ],
+  "registryDependencies": [
+    "https://dendense.github.io/dens-ui/r/utils.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/divider.tsx",
+      "type": "registry:ui",
+      "content": "import * as React from \"react\"\nimport { cva, type VariantProps } from \"class-variance-authority\"\n\nimport { cn } from \"@/lib/utils\"\n\n/*\n * Divider: the break between two sections of a page.\n * Separator is the 1px rule inside a component; Divider carries the vertical\n * rhythm between sections, and can hold a label, an icon or a short mark.\n */\n\nconst dividerVariants = cva(\"flex w-full items-center text-muted-foreground\", {\n  variants: {\n    variant: {\n      /** a full hairline */\n      line: \"\",\n      /** a hairline that fades out at both ends */\n      fade: \"\",\n      /** three dots, centred */\n      dots: \"justify-center\",\n      /** a short Mars Green pill, centred: the brand's full stop */\n      mark: \"justify-center\",\n    },\n    spacing: {\n      none: \"\",\n      sm: \"my-6\",\n      md: \"my-12\",\n      lg: \"my-20\",\n    },\n  },\n  defaultVariants: { variant: \"line\", spacing: \"md\" },\n})\n\nfunction Rule({ fade, side }: { fade: boolean; side?: \"start\" | \"end\" }) {\n  return (\n    <span\n      aria-hidden\n      className={cn(\n        \"h-px flex-1\",\n        !fade && \"bg-border\",\n        fade && side === \"start\" && \"bg-[linear-gradient(90deg,transparent,var(--border))]\",\n        fade && side === \"end\" && \"bg-[linear-gradient(90deg,var(--border),transparent)]\",\n        fade && !side && \"bg-[linear-gradient(90deg,transparent,var(--border)_20%,var(--border)_80%,transparent)]\"\n      )}\n    />\n  )\n}\n\nfunction Divider({\n  className,\n  variant = \"line\",\n  spacing,\n  align = \"center\",\n  children,\n  ...props\n}: React.ComponentProps<\"div\"> &\n  VariantProps<typeof dividerVariants> & {\n    /** where the label sits on line and fade dividers */\n    align?: \"start\" | \"center\" | \"end\"\n  }) {\n  const fade = variant === \"fade\"\n  let body: React.ReactNode\n  if (variant === \"dots\") {\n    body = (\n      <span aria-hidden className=\"flex gap-2\">\n        {[0, 1, 2].map((i) => (\n          <span key={i} className=\"size-1 rounded-full bg-current opacity-60\" />\n        ))}\n      </span>\n    )\n  } else if (variant === \"mark\") {\n    body = <span aria-hidden className=\"h-1 w-10 rounded-full bg-brand\" />\n  } else if (children) {\n    body = (\n      <>\n        {align !== \"start\" && <Rule fade={fade} side=\"start\" />}\n        <span className=\"flex shrink-0 items-center gap-2 px-4 text-[13px] font-medium [&_svg]:size-4 [&_svg]:shrink-0 first:pl-0 last:pr-0\">\n          {children}\n        </span>\n        {align !== \"end\" && <Rule fade={fade} side=\"end\" />}\n      </>\n    )\n  } else {\n    body = <Rule fade={fade} />\n  }\n  return (\n    <div\n      data-slot=\"divider\"\n      data-variant={variant}\n      role=\"separator\"\n      aria-orientation=\"horizontal\"\n      aria-label={typeof children === \"string\" ? children : undefined}\n      className={cn(dividerVariants({ variant, spacing }), className)}\n      {...props}\n    >\n      {body}\n    </div>\n  )\n}\n\nexport { Divider, dividerVariants }\n"
+    }
+  ]
+}

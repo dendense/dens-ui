@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Dens-UI theme — v0.1.0
+   Dens-UI theme — v0.2.0
    Mars Green #008C8D · Hermès orange #FF8A00 · soft light + near-black dark
 
    Usage (Tailwind v4), in your global stylesheet:
@@ -61,11 +61,15 @@
   --input: #cfd8d5;
   --ring: #008c8d;
 
-  --chart-1: #008c8d;
-  --chart-2: #ff8a00;
-  --chart-3: #0b3289;
-  --chart-4: #53589a;
-  --chart-5: #f74835;
+  /* categorical series, fixed order; validated for CVD separation on #ffffff */
+  --chart-1: #059488;
+  --chart-2: #e16c10;
+  --chart-3: #2d54bc;
+  --chart-4: #a79300;
+  --chart-5: #c63895;
+  /* price direction; up candles are hollow, so colour is never the only cue */
+  --chart-up: #009267;
+  --chart-down: #cc3430;
 
   --sidebar: #f6f8f7;
   --sidebar-foreground: #0f1716;
@@ -124,11 +128,13 @@
   --input: #303736;
   --ring: #19a3a4;
 
-  --chart-1: #19a3a4;
-  --chart-2: #ff9a1f;
-  --chart-3: #6c8ff0;
-  --chart-4: #8f94d6;
-  --chart-5: #f74835;
+  --chart-1: #00a0a1;
+  --chart-2: #de7515;
+  --chart-3: #456ed1;
+  --chart-4: #a5931b;
+  --chart-5: #ca449a;
+  --chart-up: #24ab7e;
+  --chart-down: #e24942;
 
   --sidebar: #111413;
   --sidebar-foreground: #ecf2f0;
@@ -187,6 +193,8 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-chart-up: var(--chart-up);
+  --color-chart-down: var(--chart-down);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -213,6 +221,7 @@
   --animate-pop-out: dens-pop-out 120ms ease-in forwards;
   --animate-fade-in: dens-fade-in 180ms ease-out;
   --animate-fade-out: dens-fade-out 120ms ease-in forwards;
+  --animate-shimmer: dens-shimmer 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 @keyframes dens-pop-in {
@@ -226,6 +235,10 @@
 }
 @keyframes dens-fade-out {
   to { opacity: 0; }
+}
+@keyframes dens-shimmer {
+  from { background-position: 150% 0; }
+  to { background-position: -50% 0; }
 }
 
 @layer base {

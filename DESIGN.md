@@ -209,13 +209,15 @@ A cool teal-gray world carried by one saturated green, punctuated by one warm or
 - **Mint** (`mint`): soft fills and success. Soft buttons and badges, success states, the sheet's lower-left block. Always carries Mint Ink (`mint-ink`) text in light mode; in dark mode the roles invert to a deep green fill (#123f3a) with mint text.
 
 ### Tertiary
-- **Hermès Orange** (`hermes-orange`, dark `hermes-orange-dark`): the one accent. Highlight badges ("Waiting on you"), highlight buttons and switches, the attention item, chart series 2. Text on it is Orange Ink (`orange-ink`), never white.
+- **Hermès Orange** (`hermes-orange`, dark `hermes-orange-dark`): the one accent. Highlight badges ("Waiting on you"), highlight buttons and switches, the attention item. Text on it is Orange Ink (`orange-ink`), never white.
 
 ### Supporting (status and charts)
 - **Champagne** (`champagne`): warning fills, with dark olive text (#4a3f00).
-- **Klein Blue** (`klein-blue`): info fills and chart series 3.
+- **Klein Blue** (`klein-blue`): info fills.
 - **Cartier Red** (`cartier-red`): destructive in light mode. Dark mode swaps to **Pomegranate** (`pomegranate`), which reads better on black.
-- **Periwinkle** (`periwinkle`): chart series 4 only.
+- **Periwinkle** (`periwinkle`): a supporting sheet colour; not used in the UI tokens.
+- **Chart series** (`--chart-1` … `--chart-5`): their own categorical set, re-stepped from the sheet hues so every adjacent pair stays apart for colour-blind readers. Light: teal #059488, orange #e16c10, blue #2d54bc, olive #a79300, magenta #c63895. Dark: #00a0a1, #de7515, #456ed1, #a5931b, #ca449a. Always in that order, never cycled.
+- **Price direction** (`--chart-up` #009267 / dark #24ab7e, `--chart-down` #cc3430 / dark #e24942): candles and price changes only.
 
 ### Neutral
 - **Teal-Gray Ground** (`teal-gray-ground`): the page background in light mode.
@@ -361,6 +363,18 @@ When a banner file is missing, the slot shows a dot matrix in which a cat face a
 - **Frame rate and motion:** the animation pauses offscreen and in hidden tabs, and renders a single frame under reduced motion.
 - **Thumbnails:** use the same cat as a static SVG.
 - **Narrow slots** (aspect < 1.1): the cat moves to a band at the top, with ear tips at y = 0.80 and the lowest whisker at 0.41, so it never sits behind the copy.
+
+### Charts
+SVG, no chart library, one file (`chart.tsx`): CandlestickChart, AreaChart, BarChart, DonutChart, BarList and SegmentedBar. Lines are 2px with round joins; columns are at most 24px wide with a 4px rounded data end and a square baseline; touching marks keep a 2px surface gap; end markers are 8px with a 2px surface ring; area fills are the series hue at 10%. Gridlines are 1px solid `border`, axes are 11px tabular `muted-foreground`, and no text ever wears a series colour. Line charts get a crosshair and one tooltip listing every series (value first, name second, a short line key); bars and donut slices are their own hit targets. Every plot is focusable and reads with the arrow keys, and renders a visually hidden data table. Candles follow the trading convention: price axis on the right, up candles hollow and down candles filled (shape, not only colour, carries direction), a last-price line with a pill on the axis, volume in the bottom fifth.
+
+### Post Card
+An image-led card in three layouts: stacked (image on top), horizontal (image beside the text from `sm`) and overlay (text on the image over a near-black scrim that reaches 60% by 40% of the height). Card radius 22 = image radius 14 + padding 8. The title link stretches over the whole card; tags sit above it and stay clickable. Category tags are mint pills; the meta line separates items with a 3px dot.
+
+### Skeletons
+Loading placeholders keep the final shape: `SkeletonText` ends on a 60% line, `SkeletonImage` takes the final aspect ratio and a faint image glyph, `SkeletonPostCard` copies PostCard's geometry. Two animations: pulse for text and blocks, shimmer (a soft band sweeping over 1.6s) for images. Both stop under reduced motion.
+
+### Divider
+The break between page sections, as opposed to Separator inside a component. Four forms: a hairline, a hairline fading at both ends, three 4px dots, and the mark (a 40 × 4 Mars Green pill). Line and fade take an optional label at the start, centre or end. Spacing steps are 24, 48 and 80px.
 
 ### Motion
 Overlays pop in over 180ms (4px rise, 0.97 scale) on `cubic-bezier(0.16, 1, 0.3, 1)` and leave over 120ms ease-in. With reduced motion every animation and transition collapses to 1ms.

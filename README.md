@@ -1,12 +1,13 @@
 # Dens-UI
 
 React components and a theme you copy into your project, in the [shadcn/ui](https://ui.shadcn.com) model.
-Mars Green `#008C8D`, one Hermès orange accent `#FF8A00`, soft light panels and a near-black dark mode.
+**v0.2.0** · Mars Green `#008C8D`, one Hermès orange accent `#FF8A00`, soft light panels and a near-black dark mode.
 Built on Radix primitives and Tailwind CSS v4.
 
 **Docs and live previews:** https://dendense.github.io/dens-ui
 
-- 24 components: Button, Badge, Card, Input, Textarea, Label, Checkbox, Switch, Radio Group, Select, Tabs, Dialog, Dropdown Menu, Tooltip, Avatar, Progress, Alert, Table, Navbar, Footer, Sidebar (with folders, an icon rail and a 24h meter), Separator, Kbd, Skeleton
+- 27 components: Button, Badge, Card, Post Card, Input, Textarea, Label, Checkbox, Switch, Radio Group, Select, Tabs, Dialog, Dropdown Menu, Tooltip, Avatar, Progress, Alert, Table, Chart, Navbar, Footer, Sidebar (with folders, an icon rail and a 24h meter), Separator, Divider, Kbd, Skeleton (text, image and post-card shapes)
+- Charts without a chart library: candlesticks for trading, area, bar, donut, bar list and a segmented share bar
 - 5 blocks: hero (photo and split), footer (sheet and simple), an ops dashboard, a split login screen, two mobile app screens
 - A shadcn-compatible registry, so `npx shadcn add <url>` installs any of it
 - Light and dark mode from one stylesheet, with the same token names shadcn/ui uses

@@ -1,7 +1,7 @@
 {
   "name": "dens-ui",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "Dens-UI — copy-paste React components and a Mars Green theme, shadcn/ui style.",
   "license": "MIT",
