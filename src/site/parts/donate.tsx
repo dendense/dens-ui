@@ -24,7 +24,7 @@ function qr(name: string) {
 
 const methods = [
   { id: "dana", title: "Dana", note: "Scan with the DANA app." },
-  { id: "crypto", title: "Crypto", note: "Check the network before you send." },
+  { id: "crypto", title: "Crypto", note: "USDT. Check the network in your wallet before you send." },
 ]
 
 export function BuyMeACoffee() {
@@ -48,7 +48,7 @@ export function BuyMeACoffee() {
               <figure key={m.id} className="grid gap-3 rounded-[16px] bg-surface p-3 ring-1 ring-border/70">
                 <div className="mx-auto aspect-square w-full max-w-[232px] overflow-hidden rounded-[4px] bg-white sm:max-w-none">
                   {src ? (
-                    <img src={src} alt={`QR code: buy me a coffee with ${m.title}`} className="size-full object-contain p-2" />
+                    <img src={src} alt={`QR code: buy me a coffee with ${m.title}`} className="size-full object-contain p-3" />
                   ) : (
                     <div className="grid size-full place-content-center justify-items-center gap-2 text-[#566361]">
                       <QrCodeIcon className="size-8" aria-hidden />
