@@ -1,19 +1,52 @@
-# Dens-UI
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme-header-dark.svg">
+    <img src="docs/assets/readme-header-light.svg" alt="dens-ui" width="560">
+  </picture>
+</p>
 
-React components and a theme you copy into your project, in the [shadcn/ui](https://ui.shadcn.com) model.
-**v0.2.0** · Mars Green `#008C8D`, one Hermès orange accent `#FF8A00`, soft light panels and a near-black dark mode.
-Built on Radix primitives and Tailwind CSS v4.
+<h3 align="center">Don't start from unstyled primitives. Copy a finished look, and own every line.</h3>
 
-**Docs and live previews:** https://dendense.github.io/dens-ui
+<p align="center">
+  <a href="https://dendense.github.io/dens-ui"><img alt="version v0.2.0" src="https://img.shields.io/badge/version-v0.2.0-008C8D"></a>
+  <a href="https://github.com/dendense/dens-ui/actions/workflows/deploy.yml"><img alt="docs deploy" src="https://img.shields.io/github/actions/workflow/status/dendense/dens-ui/deploy.yml?branch=main&label=docs&logo=github"></a>
+  <img alt="30 components" src="https://img.shields.io/badge/components-30-008C8D">
+  <img alt="React 19 · Tailwind CSS v4 · Radix" src="https://img.shields.io/badge/React%2019%20%C2%B7%20Tailwind%20v4%20%C2%B7%20Radix-0b3289">
+  <a href="#quick-start"><img alt="shadcn registry" src="https://img.shields.io/badge/shadcn-registry-FF8A00"></a>
+  <img alt="light and dark" src="https://img.shields.io/badge/theme-light%20%2B%20dark-566361">
+  <a href="LICENSE"><img alt="license MIT" src="https://img.shields.io/badge/license-MIT-566361"></a>
+</p>
 
-- 30 components: Button, Badge, Card, Post Card, Input, Textarea, Label, Checkbox, Switch, Radio Group, Select, Slider, Tabs, Dialog, Dropdown Menu, Tooltip, Avatar, Progress, Alert, Table, Chart, Navbar, Footer, Sidebar (with folders, an icon rail and a 24h meter), Separator, Divider, Kbd, Skeleton (text, image and post-card shapes), Music Player, Video Player
-- Charts without a chart library: candlesticks for trading, area, bar, donut, bar list and a segmented share bar
-- Media: a music player (Now Playing card, mini row, app bottom bar, playlist) and a video player with captions, speed, picture in picture and full screen
-- 5 blocks: hero (photo and split), footer (sheet and simple), an ops dashboard, a split login screen, two mobile app screens
-- A shadcn-compatible registry, so `npx shadcn add <url>` installs any of it
-- Light and dark mode from one stylesheet, with the same token names shadcn/ui uses
+Starting a dashboard from unstyled primitives costs days of picking colours, radii and shadows before the first real screen, and most projects still end up with the same grey defaults.
 
-There is no `dens-ui` npm package. You own the code you install.
+**Dens-UI** is a set of React components and a theme you copy into your project, the [shadcn/ui](https://ui.shadcn.com) way: Mars Green `#008C8D`, *one* Hermès orange accent `#FF8A00`, soft light panels and a near-black dark mode. One command adds a component, and the code is yours to edit. There is no `dens-ui` npm package.
+
+<p align="center">
+  <a href="https://dendense.github.io/dens-ui/music.html">
+    <img src="docs/assets/showcase-dens-fm.svg" alt="dens.fm: a painted night sky with a red traffic light on the right; on the left a headline, a YouTube video and a 24-hour day bar; a Dens-UI music player bar floats at the bottom" width="100%">
+  </a>
+</p>
+<p align="center">
+  <sub><b>dens.fm</b>, a music landing built with Dens-UI: <code>MusicPlayer</code>, <code>MusicPlaylist</code>, <code>Button</code> and <code>Input</code> over a three.js sky.
+  <a href="https://dendense.github.io/dens-ui/music.html">Open it live</a> · <a href="src/music">Source</a></sub>
+</p>
+
+<p align="center">
+  <a href="https://dendense.github.io/dens-ui"><b>Docs and live previews</b></a> ·
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#using-the-style">Using the style</a> ·
+  <a href="#desktop-apps">Desktop apps</a> ·
+  <a href="#panduan-singkat-bahasa-indonesia">Bahasa Indonesia</a>
+</p>
+
+## What's inside
+
+- **30 components**: Button, Badge, Card, Post Card, Input, Textarea, Label, Checkbox, Switch, Radio Group, Select, Slider, Tabs, Dialog, Dropdown Menu, Tooltip, Avatar, Progress, Alert, Table, Chart, Navbar, Footer, Sidebar (with folders, an icon rail and a 24h meter), Separator, Divider, Kbd, Skeleton (text, image and post-card shapes), Music Player, Video Player
+- **Charts without a chart library**: candlesticks for trading, area, bar, donut, bar list and a segmented share bar
+- **Media**: a music player (Now Playing card, mini row, app bottom bar, playlist with search) that any engine can drive, and a video player with captions, speed, picture in picture and full screen
+- **5 blocks**: hero (photo and split), footer (sheet and simple), an ops dashboard, a split login screen, two mobile app screens
+- **A shadcn-compatible registry**, so `npx shadcn add <url>` installs any of it
+- **Light and dark mode** from one stylesheet, with the same token names shadcn/ui uses
 
 ---
 
