@@ -27,6 +27,10 @@ import { Slider } from "@/components/ui/slider"
  * player from the same queue, wrap both in <MusicPlayerProvider> and leave
  * tracks off the player.
  *
+ * Another engine (a YouTube or streaming SDK) can drive the same faces: put a
+ * MusicPlayerState into <MusicPlayerContext.Provider> instead of using
+ * <MusicPlayerProvider>, which owns an <audio> element.
+ *
  * Geometry (concentric): card radius 28 = cover 16 + padding 12.
  */
 
@@ -43,7 +47,7 @@ export type Track = {
 
 export type RepeatMode = "off" | "all" | "one"
 
-type PlayerState = {
+type MusicPlayerState = {
   tracks: Track[]
   index: number
   track: Track | undefined
@@ -69,10 +73,10 @@ type PlayerState = {
   cycleRepeat: () => void
 }
 
-const PlayerContext = React.createContext<PlayerState | null>(null)
+const MusicPlayerContext = React.createContext<MusicPlayerState | null>(null)
 
 function useMusicPlayer() {
-  const ctx = React.useContext(PlayerContext)
+  const ctx = React.useContext(MusicPlayerContext)
   if (!ctx) throw new Error("useMusicPlayer must be used inside <MusicPlayerProvider> or <MusicPlayer tracks>")
   return ctx
 }
@@ -178,7 +182,7 @@ function MusicPlayerProvider({
     [shuffle, tracks.length, index]
   )
 
-  const state = React.useMemo<PlayerState>(
+  const state = React.useMemo<MusicPlayerState>(
     () => ({
       tracks,
       index,
@@ -263,7 +267,7 @@ function MusicPlayerProvider({
   }
 
   return (
-    <PlayerContext.Provider value={state}>
+    <MusicPlayerContext.Provider value={state}>
       {children}
       {track && (
         <audio
@@ -289,7 +293,7 @@ function MusicPlayerProvider({
           onEnded={onEnded}
         />
       )}
-    </PlayerContext.Provider>
+    </MusicPlayerContext.Provider>
   )
 }
 
@@ -299,7 +303,7 @@ function Cover({ track, className }: { track: Track | undefined; className?: str
   return (
     <div data-slot="music-cover" className={cn("relative shrink-0 overflow-hidden bg-muted [&>*]:size-full", className)}>
       {typeof track?.cover === "string" ? (
-        <img src={track.cover} alt="" className="object-cover" />
+        <img src={track.cover} alt="" loading="lazy" decoding="async" className="object-cover" />
       ) : (
         track?.cover
       )}
@@ -631,12 +635,20 @@ function MusicPlayer({
   return tracks ? <MusicPlayerProvider tracks={tracks}>{face}</MusicPlayerProvider> : face
 }
 
-/** The queue as a list. Click a row to play it; the playing row shows moving bars. */
-function MusicPlaylist({ className, ...props }: React.ComponentProps<"ol">) {
+/**
+ * The queue as a list. Click a row to play it; the playing row shows moving bars.
+ * `filter` hides rows (a search box, say) without changing the queue or its indexes.
+ */
+function MusicPlaylist({
+  className,
+  filter,
+  ...props
+}: React.ComponentProps<"ol"> & { filter?: (track: Track, index: number) => boolean }) {
   const p = useMusicPlayer()
   return (
     <ol data-slot="music-playlist" aria-label="Playlist" className={cn("grid gap-1", className)} {...props}>
       {p.tracks.map((t, i) => {
+        if (filter && !filter(t, i)) return null
         const current = i === p.index
         const len = current ? p.duration || t.duration || 0 : t.duration || 0
         return (
@@ -679,4 +691,5 @@ function MusicPlaylist({ className, ...props }: React.ComponentProps<"ol">) {
   )
 }
 
-export { MusicPlayer, MusicPlayerProvider, MusicPlaylist, useMusicPlayer, formatTime }
+export { MusicPlayer, MusicPlayerProvider, MusicPlayerContext, MusicPlaylist, useMusicPlayer, formatTime }
+export type { MusicPlayerState }
