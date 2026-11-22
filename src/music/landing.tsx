@@ -117,8 +117,8 @@ function Landing() {
 
       <div className="pointer-events-none fixed inset-x-0 bottom-0 z-10 px-3 pb-[max(12px,env(safe-area-inset-bottom))] sm:px-6 sm:pb-6">
         {/* phones: the compact ink face, a dark pill under the sky; wider screens: the full bar */}
-        <MusicPlayer variant="mini" tone="ink" className="pointer-events-auto shadow-raised sm:hidden" />
-        <MusicPlayer variant="bar" className="pointer-events-auto mx-auto hidden max-w-[920px] shadow-raised sm:block" />
+        <MusicPlayer variant="mini" tone="ink" className="pointer-events-auto p-2.5 pr-3.5 shadow-raised sm:hidden" />
+        <MusicPlayer variant="bar" className="pointer-events-auto mx-auto hidden max-w-[920px] px-4 py-2.5 shadow-raised sm:block" />
       </div>
       <PlaylistPanel open={listOpen} onClose={() => setListOpen(false)} title={PLAYLIST.title} returnFocus={listButton} />
     </div>
