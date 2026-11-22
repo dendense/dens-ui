@@ -22,6 +22,18 @@ Starting a dashboard from unstyled primitives costs days of picking colours, rad
 **Dens-UI** is a set of React components and a theme you copy into your project, the [shadcn/ui](https://ui.shadcn.com) way: Mars Green `#008C8D`, *one* Hermès orange accent `#FF8A00`, soft light panels and a near-black dark mode. One command adds a component, and the code is yours to edit. There is no `dens-ui` npm package.
 
 <p align="center">
+  <a href="https://dendense.github.io/dens-ui">
+    <img src="docs/assets/showcase-dashboard.svg" alt="The Dens-UI docs site: an ops dashboard with a sidebar of workspaces and folders, a dot-matrix chart of today's runs with a slowdown callout in orange, and a workflows table with status badges" width="100%">
+  </a>
+</p>
+<p align="center">
+  <sub>The <b>ops dashboard</b> block on the docs site: <code>Sidebar</code>, <code>Chart</code>, <code>Table</code>, <code>Tabs</code>, <code>Badge</code> and <code>Button</code> in the light theme.
+  <a href="https://dendense.github.io/dens-ui">Open the docs</a> · <a href="src/site/blocks/dashboard.tsx">Source</a></sub>
+</p>
+
+<h4 align="center">Example project</h4>
+
+<p align="center">
   <a href="https://dendense.github.io/dens-ui/music.html">
     <img src="docs/assets/showcase-dens-fm.svg" alt="dens.fm: a painted night sky with a red traffic light on the right; on the left a headline, a YouTube video and a 24-hour day bar; a Dens-UI music player bar floats at the bottom" width="100%">
   </a>
