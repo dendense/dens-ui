@@ -54,7 +54,7 @@ Starting a dashboard from unstyled primitives costs days of picking colours, rad
 ## What's inside
 
 - **30 components**: Button, Badge, Card, Post Card, Input, Textarea, Label, Checkbox, Switch, Radio Group, Select, Slider, Tabs, Dialog, Dropdown Menu, Tooltip, Avatar, Progress, Alert, Table, Chart, Navbar, Footer, Sidebar (with folders, an icon rail and a 24h meter), Separator, Divider, Kbd, Skeleton (text, image and post-card shapes), Music Player, Video Player
-- **Charts without a chart library**: candlesticks for trading, area, bar, donut, bar list and a segmented share bar
+- **Charts in the Dens-UI palette**: candlesticks for trading, area and line on [TradingView Lightweight Charts™](https://github.com/tradingview/lightweight-charts), themed from the tokens and following light/dark live; bar, donut, bar list and a segmented share bar in plain SVG
 - **Media**: a music player (Now Playing card, mini row, app bottom bar, playlist with search) that any engine can drive, and a video player with captions, speed, picture in picture and full screen
 - **5 blocks**: hero (photo and split), footer (sheet and simple), an ops dashboard, a split login screen, two mobile app screens
 - **A shadcn-compatible registry**, so `npx shadcn add <url>` installs any of it
@@ -235,5 +235,7 @@ When a file is missing, as on the public site, the slot shows a dot-matrix cat i
 ---
 
 Palette from the "Mars Green" colour study in the project references. Demo names and figures in the blocks are fictional.
+
+The candlestick, area and line charts are powered by [TradingView Lightweight Charts™](https://github.com/tradingview/lightweight-charts), © TradingView, Inc., Apache-2.0. The `chart` registry item installs it as a dependency; keep the TradingView logo on the charts, or link to [tradingview.com](https://www.tradingview.com/) on the page, as its licence asks.
 
 MIT © Denslab

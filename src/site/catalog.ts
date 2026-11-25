@@ -11,6 +11,8 @@ export type ComponentDoc = {
   usage: string
   api?: ApiRow[]
   notes?: string[]
+  /** credit for third-party code the component builds on, shown under the notes */
+  credit?: { text: string; href: string; label: string }
 }
 
 const demoModules = import.meta.glob<{ default: React.ComponentType }>("./demos/*.tsx", { eager: true })
@@ -408,7 +410,7 @@ export const components: ComponentDoc[] = [
   {
     slug: "chart",
     name: "Chart",
-    description: "SVG charts with no chart library: candlesticks for trading, area, bar, donut, ranked bars and a segmented share bar.",
+    description: "Time series on TradingView lightweight-charts, themed from the Dens-UI tokens: candlesticks for trading, area and line. Bar, donut, ranked bars and a segmented share bar stay plain SVG.",
     demos: [
       { file: "chart-candlestick", title: "Candlestick (trading)", align: "start" },
       { file: "chart-area", title: "Area and line", align: "start" },
@@ -416,8 +418,9 @@ export const components: ComponentDoc[] = [
       { file: "chart-donut", title: "Donut: share of sales", align: "start" },
       { file: "chart-share", title: "Bar list and segmented bar", align: "start" },
     ],
-    usage: `import { CandlestickChart, AreaChart, BarChart, DonutChart, BarList, SegmentedBar } from "@/components/ui/chart"
+    usage: `import { CandlestickChart, AreaChart, LineChart, BarChart, DonutChart, BarList, SegmentedBar } from "@/components/ui/chart"
 
+// time: "2026-09-01" or unix seconds
 <CandlestickChart data={candles} label="LMBG / IDR, daily" movingAveragePeriod={20} />
 
 <AreaChart
@@ -426,13 +429,15 @@ export const components: ComponentDoc[] = [
   series={[{ key: "online", name: "Online" }, { key: "store", name: "In store" }]}
 />
 
+<LineChart data={rows} index="month" series={[{ key: "online", name: "Online" }]} />
+
 <DonutChart data={[{ name: "Coffee beans", value: 412 }, { name: "Gear", value: 268 }]} />`,
     api: [
-      { prop: "CandlestickChart data", type: "{ time, open, high, low, close, volume? }[]" },
+      { prop: "CandlestickChart data", type: "{ time, open, high, low, close, volume? }[]", note: 'Oldest first. time is an ISO day ("2026-09-01") or unix seconds for a real time axis; any other string is drawn as a plain label.' },
       { prop: "CandlestickChart movingAveragePeriod", type: "number", note: "Draws a simple moving average of the close." },
       { prop: "CandlestickChart showVolume", type: "boolean", default: "true" },
-      { prop: "Area / Bar data, index, series", type: "Row[], string, { key, name, color? }[]", note: "index names the x key in each row; series take --chart-1 … --chart-5 in order." },
-      { prop: "AreaChart area", type: "boolean", note: "Fill under the line. On by default for a single series." },
+      { prop: "Area / Line / Bar data, index, series", type: "Row[], string, { key, name, color? }[]", note: "index names the x key in each row: a category (\"Jan\"), an ISO day or unix seconds. Series take --chart-1 … --chart-5 in order." },
+      { prop: "AreaChart area", type: "boolean", note: "Fill under the line. On by default for a single series; LineChart is AreaChart with it off." },
       { prop: "DonutChart data", type: "{ name, value, color? }[]" },
       { prop: "DonutChart centerLabel", type: "string", default: '"Total"' },
       { prop: "BarList data", type: "{ name, value, href? }[]", note: "Ranked rows with value and share of the total." },
@@ -442,10 +447,17 @@ export const components: ComponentDoc[] = [
     ],
     notes: [
       "Series colours come in a fixed order and were checked for colour-blind separation in light and dark: --chart-1 teal, --chart-2 orange, --chart-3 blue, --chart-4 olive, --chart-5 magenta.",
-      "Candles use --chart-up and --chart-down. Up candles are hollow and down candles filled, so direction never depends on colour alone.",
+      "CandlestickChart, AreaChart and LineChart draw on canvas through lightweight-charts. Their colours and font are read from the Dens-UI tokens and re-read when the page switches between light and dark, they resize with their container, and they free the canvas on unmount.",
+      "Candles use --chart-up and --chart-down. Up candles are hollow and down candles filled, so direction never depends on colour alone. Drag or pinch the candlestick chart to pan and zoom; the mouse wheel and vertical swipes keep scrolling the page.",
       "Every chart is focusable: the left and right arrow keys move the readout, Escape clears it. Each one also renders a visually hidden table of its data.",
       "Lines are 2px, columns at most 24px wide with a 4px rounded end, and touching marks keep a 2px gap.",
+      "The registry item installs lightweight-charts (Apache-2.0) as a dependency. Its licence asks for a TradingView attribution on the page: the small TradingView logo on each time-series chart is that credit, so leave it on, or add a link to tradingview.com elsewhere on the page.",
     ],
+    credit: {
+      text: "Candlestick, area and line charts are powered by TradingView Lightweight Charts™, © TradingView, Inc., Apache-2.0.",
+      href: "https://www.tradingview.com/",
+      label: "tradingview.com",
+    },
   },
   {
     slug: "slider",

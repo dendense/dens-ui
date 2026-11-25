@@ -6,7 +6,7 @@ function candles(n: number, seed = 7): Candle[] {
   const rand = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646
   const out: Candle[] = []
   let price = 4820
-  const start = new Date(2026, 8, 1)
+  const start = Date.UTC(2026, 8, 1)
   for (let i = 0; i < n; i++) {
     // pulled toward a slow wave, so the walk has swings instead of one long climb
     const target = 4820 + 240 * Math.sin(i / 10) + 4 * i
@@ -14,10 +14,9 @@ function candles(n: number, seed = 7): Candle[] {
     const close = Math.max(100, open * 0.7 + target * 0.3 + (rand() - 0.5) * 120)
     const high = Math.max(open, close) + rand() * 60
     const low = Math.min(open, close) - rand() * 60
-    const d = new Date(start)
-    d.setDate(start.getDate() + i)
     out.push({
-      time: d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }),
+      // ISO dates give the chart a real time axis
+      time: new Date(start + i * 86_400_000).toISOString().slice(0, 10),
       open: Math.round(open),
       high: Math.round(high),
       low: Math.round(low),
