@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+- **Chart**: `CandlestickChart` and `AreaChart` now draw through [TradingView Lightweight Charts™](https://github.com/tradingview/lightweight-charts) (Apache-2.0), themed from the Dens-UI tokens. Colours and font are re-read on every light/dark switch, the canvas resizes with its container and is freed on unmount. The candlestick chart pans and zooms by drag and pinch; the mouse wheel and vertical swipes keep scrolling the page. Readout, legend, keyboard navigation and the hidden data table work as before.
+- `Candle.time` (and an AreaChart `index` value) may be an ISO day (`"2026-09-01"`) or unix seconds for a real time axis. Any other string is still drawn as a plain label.
+- The `chart` registry item now lists `lightweight-charts` as a dependency. `BarChart`, `DonutChart`, `BarList` and `SegmentedBar` are unchanged and still need no library.
+
+### Added
+- `LineChart`: `AreaChart` without the fill.
+
 ## 0.2.0 · 2026-11-21
 
 ### Added

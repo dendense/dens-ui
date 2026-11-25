@@ -347,6 +347,15 @@ export function ComponentPage({ slug }: { slug: string }) {
         </>
       )}
 
+      {doc.credit && (
+        <p className="mt-6 text-[13px] text-muted-foreground">
+          {doc.credit.text}{" "}
+          <a href={doc.credit.href} target="_blank" rel="noreferrer" className="font-medium text-primary underline-offset-4 hover:underline">
+            {doc.credit.label}
+          </a>
+        </p>
+      )}
+
       <Pager
         prev={prev ? { to: `/docs/components/${prev.slug}`, label: prev.name } : { to: "/docs/theming", label: "Theming" }}
         next={next ? { to: `/docs/components/${next.slug}`, label: next.name } : { to: "/blocks/dashboard", label: "Blocks" }}

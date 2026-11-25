@@ -72,6 +72,7 @@
       "type": "registry:ui",
       "title": "Chart",
       "dependencies": [
+        "lightweight-charts",
         "lucide-react"
       ],
       "registryDependencies": [

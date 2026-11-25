@@ -1,23 +1,47 @@
 import * as React from "react"
+import {
+  AreaSeries,
+  CandlestickSeries,
+  ColorType,
+  CrosshairMode,
+  HistogramSeries,
+  LineSeries,
+  LineStyle,
+  createChart,
+  type AutoscaleInfoProvider,
+  type ChartOptions,
+  type DeepPartial,
+  type IChartApi,
+  type ISeriesApi,
+  type MouseEventParams,
+  type Time,
+  type UTCTimestamp,
+} from "lightweight-charts"
 import { ArrowDownRightIcon, ArrowUpRightIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
 /*
- * Dens-UI charts: SVG, no chart library.
+ * Dens-UI charts.
  *
- *   CandlestickChart  price over time: OHLC candles, volume, moving average
- *   AreaChart         change over time, one or more series
- *   BarChart          magnitude per category (columns)
- *   DonutChart        parts of a whole, with a centre total
- *   BarList           ranked shares, e.g. sales by channel
- *   SegmentedBar      one whole split into parts, shares printed inside
+ *   CandlestickChart  price over time: OHLC candles, volume, moving average   lightweight-charts
+ *   AreaChart         change over time, one or more series                    lightweight-charts
+ *   LineChart         AreaChart without the fill                              lightweight-charts
+ *   BarChart          magnitude per category (columns)                        SVG
+ *   DonutChart        parts of a whole, with a centre total                   SVG
+ *   BarList           ranked shares, e.g. sales by channel                    HTML
+ *   SegmentedBar      one whole split into parts, shares printed inside       HTML
+ *
+ * Time series run on TradingView lightweight-charts (Apache-2.0,
+ * https://github.com/tradingview/lightweight-charts). Keep its attribution
+ * logo on, or credit TradingView with a link on the page, as its licence asks.
  *
  * Shared rules
  *   colour      series take --chart-1 … --chart-5 in that fixed order; never cycled
  *   marks       lines 2px, columns ≤ 24px with a 4px rounded end, 2px surface gaps
  *   text        axis, legend and values use text tokens, never the series colour
- *   hover       crosshair + one tooltip on line charts, per-mark tooltips on bars
+ *   theme       canvas colours are read from the tokens and follow light/dark live
+ *   hover       crosshair + one readout on time series, per-mark tooltips on bars
  *   keyboard    every plot is focusable; ← → move the readout
  *   a11y        each chart carries a visually hidden data table
  */
@@ -144,10 +168,196 @@ function SrTable({ caption, head, rows }: { caption: string; head: string[]; row
 const axisText = "fill-muted-foreground text-[11px] tabular-nums"
 
 /* ------------------------------------------------------------------ */
+/* lightweight-charts bridge                                           */
+/* ------------------------------------------------------------------ */
+
+/*
+ * The time-series charts draw through TradingView's lightweight-charts
+ * (Apache-2.0, https://www.tradingview.com/). The library paints on canvas,
+ * so every colour is read from the Dens-UI tokens at runtime and re-read
+ * when the theme changes. Its attribution logo stays on, as the licence asks.
+ */
+
+let probe: CanvasRenderingContext2D | null | undefined
+
+/** any CSS colour, including var(--token), as an rgba() string the canvas understands */
+function resolveColor(el: Element, color: string, alpha = 1) {
+  const v = color.match(/^var\((--[\w-]+)\)$/)
+  const raw = v ? getComputedStyle(el).getPropertyValue(v[1]).trim() : color
+  if (probe === undefined) {
+    const canvas = document.createElement("canvas")
+    canvas.width = canvas.height = 1
+    probe = canvas.getContext("2d", { willReadFrequently: true })
+  }
+  if (!probe) return raw
+  probe.clearRect(0, 0, 1, 1)
+  probe.fillStyle = "rgba(0, 0, 0, 0)"
+  probe.fillStyle = raw
+  probe.fillRect(0, 0, 1, 1)
+  const [r, g, b, a] = probe.getImageData(0, 0, 1, 1).data
+  return `rgba(${r}, ${g}, ${b}, ${+((a / 255) * alpha).toFixed(3)})`
+}
+
+const alphaOf = (rgba: string) => Number(rgba.match(/,\s*([\d.]+)\)$/)?.[1] ?? 1)
+
+/** the first painted background behind the chart, so the canvas sits on its real surface */
+function surfaceBehind(el: HTMLElement) {
+  for (let n: HTMLElement | null = el; n; n = n.parentElement) {
+    const bg = resolveColor(n, getComputedStyle(n).backgroundColor)
+    if (alphaOf(bg) > 0.98) return bg
+  }
+  return resolveColor(el, "var(--background)")
+}
+
+type ChartTheme = ReturnType<typeof readTheme>
+
+function readTheme(el: HTMLElement) {
+  const color = (c: string, alpha?: number) => resolveColor(el, c, alpha)
+  return {
+    color,
+    surface: surfaceBehind(el),
+    text: color("var(--muted-foreground)"),
+    grid: color("var(--border)"),
+    crosshair: color("var(--muted-foreground)", 0.55),
+    label: color("var(--foreground)"),
+    up: color("var(--chart-up)"),
+    down: color("var(--chart-down)"),
+    font: getComputedStyle(el).fontFamily,
+  }
+}
+
+/** bumps whenever the page theme may have changed: the .dark class, inline tokens, OS scheme, late fonts */
+function useThemeVersion() {
+  const [version, setVersion] = React.useState(0)
+  React.useEffect(() => {
+    const bump = () => setVersion((v) => v + 1)
+    const mo = new MutationObserver(bump)
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "style", "data-theme"] })
+    const mq = window.matchMedia("(prefers-color-scheme: dark)")
+    mq.addEventListener("change", bump)
+    let alive = true
+    document.fonts?.ready.then(() => alive && bump())
+    return () => {
+      alive = false
+      mo.disconnect()
+      mq.removeEventListener("change", bump)
+    }
+  }, [])
+  return version
+}
+
+function themeOptions(t: ChartTheme): DeepPartial<ChartOptions> {
+  const line = { color: t.crosshair, width: 1 as const, style: LineStyle.Solid, labelBackgroundColor: t.label }
+  return {
+    // transparent, so patterned surfaces show through; the rgb still tells the library
+    // whether it sits on light or dark, which picks the attribution logo's ink
+    layout: { background: { type: ColorType.Solid, color: t.surface.replace(/[\d.]+\)$/, "0)") }, textColor: t.text, fontFamily: t.font, fontSize: 11, attributionLogo: true },
+    grid: { vertLines: { visible: false }, horzLines: { color: t.grid } },
+    timeScale: { borderColor: t.grid },
+    crosshair: { vertLine: line, horzLine: line },
+  }
+}
+
+const baseOptions: DeepPartial<ChartOptions> = {
+  autoSize: true,
+  rightPriceScale: { borderVisible: false },
+  leftPriceScale: { borderVisible: false },
+  timeScale: { fixLeftEdge: true, fixRightEdge: true, ticksVisible: false, lockVisibleTimeRangeOnResize: true },
+  // the page keeps vertical swipes and the mouse wheel; the chart keeps drags and pinches
+  handleScroll: { mouseWheel: false, vertTouchDrag: false },
+  handleScale: { mouseWheel: false },
+}
+
+/** keep every point in view as the container resizes */
+function fitOnResize(chart: IChartApi) {
+  const ts = chart.timeScale()
+  const fit = () => ts.fitContent()
+  ts.subscribeSizeChange(fit)
+  return () => ts.unsubscribeSizeChange(fit)
+}
+
+/*
+ * Time axis. ISO dates ("2026-09-01") and unix seconds give a real time axis.
+ * Any other key ("Jan", "W1") is a category: it gets a stand-in day per row
+ * and the axis prints the label back.
+ */
+const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/
+const DAY = 86_400
+
+function nativeDate(t: Time) {
+  if (typeof t === "number") return new Date(t * 1000)
+  if (typeof t === "string") return new Date(`${t}T00:00:00Z`)
+  return new Date(Date.UTC(t.year, t.month - 1, t.day))
+}
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+/** "17 Sep 2026", plus "14:30" for intraday data (UTC, like the axis) */
+function formatDay(d: Date, withClock: boolean) {
+  const day = `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`
+  return withClock ? `${day} ${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}` : day
+}
+
+function timeAxis(keys: (string | number)[]) {
+  const native = keys.length > 0 && keys.every((k) => typeof k === "number" || ISO_DAY.test(k))
+  const withClock = native && keys.some((k) => typeof k === "number")
+  const times: Time[] = keys.map((k, i) => (native ? (k as Time) : (((i + 1) * DAY) as UTCTimestamp)))
+  const label = (t: Time) => (native ? formatDay(nativeDate(t), withClock) : String(keys[Math.round(Number(t) / DAY) - 1] ?? ""))
+  return { native, withClock, times, label }
+}
+type TimeAxis = ReturnType<typeof timeAxis>
+
+/** stable formatter callbacks that always read the latest axis and props */
+function axisOptions(axis: React.RefObject<TimeAxis>, price: React.RefObject<Formatter>): DeepPartial<ChartOptions> {
+  return {
+    localization: {
+      locale: "en-US",
+      priceFormatter: (p: number) => price.current(p),
+      timeFormatter: (t: Time) => axis.current.label(t),
+    },
+    timeScale: {
+      tickMarkFormatter: (t: Time) => (axis.current.native ? null : axis.current.label(t)),
+    },
+  }
+}
+
+const plotFocus = "relative w-full rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-card"
+
+/** ← → Home End move the crosshair, Escape clears it */
+function useCrosshairKeys(
+  n: number,
+  active: number | null,
+  setActive: (i: number | null) => void,
+  place: (i: number) => void,
+  clear: () => void
+) {
+  return (e: React.KeyboardEvent) => {
+    let next: number | null | undefined
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft") next = Math.min(n - 1, Math.max(0, (active ?? n - 1) + (e.key === "ArrowRight" ? 1 : -1)))
+    else if (e.key === "Home") next = 0
+    else if (e.key === "End") next = n - 1
+    else if (e.key === "Escape") next = null
+    if (next === undefined) return
+    e.preventDefault()
+    setActive(next)
+    if (next == null) clear()
+    else place(next)
+  }
+}
+
+/* ------------------------------------------------------------------ */
 /* CandlestickChart                                                    */
 /* ------------------------------------------------------------------ */
 
-export type Candle = { time: string; open: number; high: number; low: number; close: number; volume?: number }
+export type Candle = {
+  /** "2026-09-01" or unix seconds for a real time axis; any other string is a plain label */
+  time: string | number
+  open: number
+  high: number
+  low: number
+  close: number
+  volume?: number
+}
 
 function movingAverage(data: Candle[], period: number) {
   return data.map((_, i) => {
@@ -156,6 +366,13 @@ function movingAverage(data: Candle[], period: number) {
     for (let j = i - period + 1; j <= i; j++) s += data[j].close
     return s / period
   })
+}
+
+type CandleApi = {
+  chart: IChartApi
+  candles: ISeriesApi<"Candlestick">
+  volume: ISeriesApi<"Histogram"> | null
+  ma: ISeriesApi<"Line"> | null
 }
 
 export function CandlestickChart({
@@ -168,6 +385,7 @@ export function CandlestickChart({
   movingAveragePeriod,
   className,
 }: {
+  /** oldest first, one row per period */
   data: Candle[]
   /** accessible name and table caption, e.g. "LMBG / IDR, daily" */
   label?: string
@@ -179,57 +397,121 @@ export function CandlestickChart({
   movingAveragePeriod?: number
   className?: string
 }) {
-  const [ref, width] = useWidth<HTMLDivElement>()
+  const host = React.useRef<HTMLDivElement>(null)
+  const api = React.useRef<CandleApi | null>(null)
   const [active, setActive] = React.useState<number | null>(null)
-  const [pointerY, setPointerY] = React.useState<number | null>(null)
+  const themeVersion = useThemeVersion()
 
-  const axisW = Math.max(56, axisWidth(data.map((d) => priceFormatter(d.high))) + 4)
-  const top = 12
-  const bottom = 26
-  const plotW = Math.max(0, width - axisW)
-  const plotH = height - top - bottom
-  const volH = showVolume ? Math.round(plotH * 0.2) : 0
-  const priceH = plotH - (showVolume ? volH + 12 : 0)
-
+  const axis = React.useMemo(() => timeAxis(data.map((d) => d.time)), [data])
+  const axisRef = React.useRef(axis)
+  const priceRef = React.useRef(priceFormatter)
+  axisRef.current = axis
+  priceRef.current = priceFormatter
   const n = data.length
-  const step = plotW / Math.max(1, n)
-  const bodyW = Math.max(3, Math.min(12, step * 0.64))
-  const xOf = (i: number) => i * step + step / 2
+  const nRef = React.useRef(n)
+  nRef.current = n
 
-  const lows = data.map((d) => d.low)
-  const highs = data.map((d) => d.high)
-  const pad = (Math.max(...highs) - Math.min(...lows)) * 0.06
-  const { lo, hi, ticks } = niceTicks(Math.min(...lows) - pad, Math.max(...highs) + pad, 5)
-  const yOf = (v: number) => top + ((hi - v) / (hi - lo)) * priceH
-  const vOf = (y: number) => hi - ((y - top) / priceH) * (hi - lo)
-  const maxVol = Math.max(1, ...data.map((d) => d.volume ?? 0))
-  const volTop = top + priceH + 12
-  const ma = movingAveragePeriod ? movingAverage(data, movingAveragePeriod) : null
+  // build once per shape of chart; the library owns the canvas from here
+  React.useLayoutEffect(() => {
+    const el = host.current
+    if (!el) return
+    const chart = createChart(el, {
+      ...baseOptions,
+      ...axisOptions(axisRef, priceRef),
+      timeScale: { ...baseOptions.timeScale, ...axisOptions(axisRef, priceRef).timeScale, timeVisible: axisRef.current.withClock },
+      crosshair: { mode: CrosshairMode.Normal },
+      rightPriceScale: { borderVisible: false, scaleMargins: { top: 0.08, bottom: showVolume ? 0.27 : 0.08 } },
+    })
+    const volume = showVolume
+      ? chart.addSeries(HistogramSeries, { priceScaleId: "volume", priceFormat: { type: "volume" }, lastValueVisible: false, priceLineVisible: false })
+      : null
+    volume?.priceScale().applyOptions({ scaleMargins: { top: 0.81, bottom: 0 }, visible: false })
+    const candles = chart.addSeries(CandlestickSeries, {
+      borderVisible: true,
+      priceLineStyle: LineStyle.Solid,
+      priceLineWidth: 1,
+    })
+    const ma = movingAveragePeriod
+      ? chart.addSeries(LineSeries, { lineWidth: 2, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false })
+      : null
+    api.current = { chart, candles, volume, ma }
 
+    const onMove = (p: MouseEventParams) => {
+      if (p.time === undefined || p.logical === undefined || !p.point) return setActive(null)
+      setActive(Math.min(nRef.current - 1, Math.max(0, Math.round(p.logical))))
+    }
+    chart.subscribeCrosshairMove(onMove)
+    const unfit = fitOnResize(chart)
+    return () => {
+      unfit()
+      chart.unsubscribeCrosshairMove(onMove)
+      api.current = null
+      chart.remove()
+    }
+  }, [showVolume, movingAveragePeriod])
+
+  // data
+  React.useLayoutEffect(() => {
+    const a = api.current
+    if (!a) return
+    const t = axis.times
+    a.chart.applyOptions({ timeScale: { timeVisible: axis.withClock } })
+    a.candles.setData(data.map((d, i) => ({ time: t[i], open: d.open, high: d.high, low: d.low, close: d.close })))
+    a.volume?.setData(data.map((d, i) => ({ time: t[i], value: d.volume ?? 0 })))
+    if (a.ma && movingAveragePeriod) {
+      const avg = movingAverage(data, movingAveragePeriod)
+      a.ma.setData(avg.map((v, i) => (v == null ? { time: t[i] } : { time: t[i], value: v })))
+    }
+    a.chart.timeScale().fitContent()
+  }, [data, axis, showVolume, movingAveragePeriod])
+
+  // theme: tokens are re-read on every light/dark switch
+  React.useLayoutEffect(() => {
+    const a = api.current
+    const el = host.current
+    if (!a || !el) return
+    const th = readTheme(el)
+    a.chart.applyOptions(themeOptions(th))
+    // up candles hollow, down candles filled: direction never rests on colour alone
+    a.candles.applyOptions({
+      upColor: "rgba(0, 0, 0, 0)",
+      downColor: th.down,
+      borderUpColor: th.up,
+      borderDownColor: th.down,
+      wickUpColor: th.up,
+      wickDownColor: th.down,
+      // the hollow up body is transparent, so name the last-price colour outright
+      priceLineColor: n && data[n - 1].close < data[n - 1].open ? th.down : th.up,
+    })
+    a.ma?.applyOptions({ color: th.color("var(--chart-3)") })
+    if (a.volume) {
+      const upV = th.color("var(--chart-up)", 0.3)
+      const downV = th.color("var(--chart-down)", 0.3)
+      a.volume.setData(data.map((d, i) => ({ time: axis.times[i], value: d.volume ?? 0, color: d.close >= d.open ? upV : downV })))
+    }
+  }, [themeVersion, data, axis, n, showVolume, movingAveragePeriod])
+
+  const keys = useCrosshairKeys(
+    n,
+    active,
+    setActive,
+    (i) => api.current && api.current.chart.setCrosshairPosition(data[i].close, axis.times[i], api.current.candles),
+    () => api.current?.chart.clearCrosshairPosition()
+  )
+
+  if (n === 0) return null
   const last = data[n - 1]
-  const prev = data[n - 2] ?? last
   const shown = active != null ? data[active] : last
-  const shownPrev = active != null ? data[active - 1] ?? data[active] : prev
+  const shownPrev = active != null ? data[active - 1] ?? data[active] : data[n - 2] ?? last
   const change = shown.close - shownPrev.close
-  const changePct = (change / shownPrev.close) * 100
-  const up = (d: Candle) => d.close >= d.open
-  const every = labelEvery(n, plotW, 72)
-
-  function onMove(e: React.PointerEvent<SVGSVGElement>) {
-    const r = e.currentTarget.getBoundingClientRect()
-    const x = e.clientX - r.left
-    const y = e.clientY - r.top
-    if (x > plotW) return
-    setActive(Math.min(n - 1, Math.max(0, Math.floor(x / step))))
-    setPointerY(y >= top && y <= top + priceH ? y : null)
-  }
+  const changePct = shownPrev.close ? (change / shownPrev.close) * 100 : 0
 
   return (
     <div className={cn("relative w-full", className)}>
       {/* readout: values lead */}
-      <div className="mb-3 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-[12.5px]">
+      <div className="mb-3 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-[12.5px]" aria-live="polite">
         <span className="flex items-baseline gap-2">
-          <span className="text-[22px] font-bold tracking-[-0.02em]">{priceFormatter(shown.close)}</span>
+          <span className="text-[22px] font-bold tracking-[-0.02em] tabular-nums">{priceFormatter(shown.close)}</span>
           <span className={cn("flex items-center gap-1 self-center font-semibold tabular-nums", change >= 0 ? "text-chart-up" : "text-chart-down")}>
             {change >= 0 ? <ArrowUpRightIcon className="size-3.5" aria-label="up" /> : <ArrowDownRightIcon className="size-3.5" aria-label="down" />}
             {priceFormatter(Math.abs(change))} ({changePct >= 0 ? "+" : "−"}
@@ -237,7 +519,7 @@ export function CandlestickChart({
           </span>
         </span>
         <span className="flex flex-wrap gap-x-3 text-muted-foreground tabular-nums">
-          <span>{shown.time}</span>
+          <span>{axis.label(axis.times[active ?? n - 1])}</span>
           <span>O <b className="font-semibold text-foreground">{priceFormatter(shown.open)}</b></span>
           <span>H <b className="font-semibold text-foreground">{priceFormatter(shown.high)}</b></span>
           <span>L <b className="font-semibold text-foreground">{priceFormatter(shown.low)}</b></span>
@@ -246,141 +528,20 @@ export function CandlestickChart({
         </span>
       </div>
 
-      <div ref={ref} className="relative w-full" style={{ height }}>
-        {width > 0 && (
-          <svg
-            width={width}
-            height={height}
-            role="img"
-            aria-label={`${label}. Last close ${priceFormatter(last.close)}. Use the left and right arrow keys to read each candle.`}
-            tabIndex={0}
-            className="block touch-pan-y rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            onPointerMove={onMove}
-            onPointerLeave={() => {
-              setActive(null)
-              setPointerY(null)
-            }}
-            onKeyDown={(e) => keyNav(e, n, active, setActive)}
-          >
-            {/* grid + price axis on the right, the trading convention */}
-            {ticks.map((t) => (
-              <g key={t}>
-                <line x1={0} x2={plotW} y1={yOf(t)} y2={yOf(t)} className="stroke-border" strokeWidth={1} shapeRendering="crispEdges" />
-                <text x={plotW + 10} y={yOf(t)} dy="0.32em" className={axisText}>
-                  {priceFormatter(t)}
-                </text>
-              </g>
-            ))}
-            {showVolume && <line x1={0} x2={plotW} y1={volTop + volH} y2={volTop + volH} className="stroke-border" shapeRendering="crispEdges" />}
-
-            {/* time labels */}
-            {data.map((d, i) =>
-              i % every === 0 ? (
-                <text key={d.time} x={i === 0 ? 0 : xOf(i)} y={height - 8} textAnchor={i === 0 ? "start" : "middle"} className={axisText}>
-                  {d.time}
-                </text>
-              ) : null
-            )}
-
-            {/* volume */}
-            {showVolume &&
-              data.map((d, i) => {
-                const h = ((d.volume ?? 0) / maxVol) * volH
-                return (
-                  <rect
-                    key={`v${i}`}
-                    x={xOf(i) - bodyW / 2}
-                    y={volTop + volH - h}
-                    width={bodyW}
-                    height={h}
-                    rx={Math.min(2, bodyW / 4)}
-                    fill={up(d) ? "var(--chart-up)" : "var(--chart-down)"}
-                    opacity={active == null || active === i ? 0.32 : 0.16}
-                  />
-                )
-              })}
-
-            {/* candles: up hollow, down filled, so direction never rests on colour alone */}
-            {data.map((d, i) => {
-              const isUp = up(d)
-              const color = isUp ? "var(--chart-up)" : "var(--chart-down)"
-              const yO = yOf(d.open)
-              const yC = yOf(d.close)
-              const bodyTop = Math.min(yO, yC)
-              const bodyH = Math.max(1, Math.abs(yC - yO))
-              const x = Math.round(xOf(i)) + 0.5
-              const dim = active != null && active !== i
-              return (
-                <g key={d.time} opacity={dim ? 0.55 : 1}>
-                  <line x1={x} x2={x} y1={yOf(d.high)} y2={bodyTop} stroke={color} strokeWidth={1} />
-                  <line x1={x} x2={x} y1={bodyTop + bodyH} y2={yOf(d.low)} stroke={color} strokeWidth={1} />
-                  <rect
-                    x={x - bodyW / 2 + (isUp ? 0.75 : 0)}
-                    y={bodyTop + (isUp ? 0.75 : 0)}
-                    width={bodyW - (isUp ? 1.5 : 0)}
-                    height={Math.max(1, bodyH - (isUp ? 1.5 : 0))}
-                    rx={1.5}
-                    fill={isUp ? "var(--card)" : color}
-                    stroke={isUp ? color : "none"}
-                    strokeWidth={isUp ? 1.5 : 0}
-                  />
-                </g>
-              )
-            })}
-
-            {/* moving average */}
-            {ma && (
-              <path
-                d={ma
-                  .map((v, i) => (v == null ? null : `${xOf(i)},${yOf(v)}`))
-                  .filter(Boolean)
-                  .map((p, i) => `${i ? "L" : "M"}${p}`)
-                  .join("")}
-                fill="none"
-                stroke="var(--chart-3)"
-                strokeWidth={2}
-                strokeLinejoin="round"
-                strokeLinecap="round"
-              />
-            )}
-
-            {/* last price */}
-            <line
-              x1={0}
-              x2={plotW}
-              y1={Math.round(yOf(last.close)) + 0.5}
-              y2={Math.round(yOf(last.close)) + 0.5}
-              stroke={up(last) ? "var(--chart-up)" : "var(--chart-down)"}
-              strokeWidth={1}
-              opacity={0.7}
-            />
-            <g transform={`translate(${plotW + 4} ${yOf(last.close)})`}>
-              <rect x={0} y={-10} width={axisW - 6} height={20} rx={10} className="fill-popover" stroke={up(last) ? "var(--chart-up)" : "var(--chart-down)"} strokeWidth={1.5} />
-              <text x={(axisW - 6) / 2} dy="0.34em" textAnchor="middle" className="fill-foreground text-[11px] font-semibold tabular-nums">
-                {priceFormatter(last.close)}
-              </text>
-            </g>
-
-            {/* crosshair */}
-            {active != null && (
-              <g pointerEvents="none">
-                <line x1={xOf(active)} x2={xOf(active)} y1={top} y2={volTop + volH} className="stroke-muted-foreground" strokeWidth={1} opacity={0.5} />
-                {pointerY != null && (
-                  <>
-                    <line x1={0} x2={plotW} y1={pointerY} y2={pointerY} className="stroke-muted-foreground" strokeWidth={1} opacity={0.5} />
-                    <g transform={`translate(${plotW + 4} ${pointerY})`}>
-                      <rect x={0} y={-10} width={axisW - 6} height={20} rx={10} className="fill-foreground" />
-                      <text x={(axisW - 6) / 2} dy="0.34em" textAnchor="middle" className="fill-background text-[11px] font-semibold tabular-nums">
-                        {priceFormatter(vOf(pointerY))}
-                      </text>
-                    </g>
-                  </>
-                )}
-              </g>
-            )}
-          </svg>
-        )}
-      </div>
+      <div
+        ref={host}
+        role="group"
+        aria-roledescription="chart"
+        aria-label={`${label}. Last close ${priceFormatter(last.close)}. Use the left and right arrow keys to read each candle.`}
+        tabIndex={0}
+        className={plotFocus}
+        style={{ height }}
+        onKeyDown={keys}
+        onBlur={() => {
+          setActive(null)
+          api.current?.chart.clearCrosshairPosition()
+        }}
+      />
       <ChartLegend
         className="mt-3"
         shape="line"
@@ -393,15 +554,25 @@ export function CandlestickChart({
       <SrTable
         caption={label}
         head={["Time", "Open", "High", "Low", "Close", "Volume"]}
-        rows={data.map((d) => [d.time, priceFormatter(d.open), priceFormatter(d.high), priceFormatter(d.low), priceFormatter(d.close), d.volume != null ? volumeFormatter(d.volume) : ""])}
+        rows={data.map((d, i) => [axis.label(axis.times[i]), priceFormatter(d.open), priceFormatter(d.high), priceFormatter(d.low), priceFormatter(d.close), d.volume != null ? volumeFormatter(d.volume) : ""])}
       />
     </div>
   )
 }
 
 /* ------------------------------------------------------------------ */
-/* AreaChart                                                           */
+/* AreaChart / LineChart                                               */
 /* ------------------------------------------------------------------ */
+
+type LineApi = { chart: IChartApi; series: ISeriesApi<"Area" | "Line">[] }
+type Dot = { x: number; y: number; color: string }
+
+/** keep 0 on the value axis, so areas fill down to a true baseline */
+const fromZero: AutoscaleInfoProvider = (original) => {
+  const r = original()
+  if (!r?.priceRange) return r
+  return { ...r, priceRange: { minValue: Math.min(0, r.priceRange.minValue), maxValue: r.priceRange.maxValue } }
+}
 
 export function AreaChart({
   data,
@@ -413,8 +584,9 @@ export function AreaChart({
   area,
   className,
 }: {
+  /** oldest first */
   data: Row[]
-  /** key of the x value in each row, e.g. "month" */
+  /** key of the x value in each row: a category ("Jan"), an ISO date or unix seconds */
   index: string
   series: ChartSeries[]
   label?: string
@@ -424,88 +596,169 @@ export function AreaChart({
   area?: boolean
   className?: string
 }) {
-  const [ref, width] = useWidth<HTMLDivElement>()
+  const host = React.useRef<HTMLDivElement>(null)
+  const api = React.useRef<LineApi | null>(null)
+  const remeasure = React.useRef<() => void>(() => {})
   const [active, setActive] = React.useState<number | null>(null)
+  const [dots, setDots] = React.useState<Dot[]>([])
+  const [frame, setFrame] = React.useState({ left: 0, width: 0, plotH: 0 })
+  const themeVersion = useThemeVersion()
   const colors = series.map((s, i) => s.color ?? CHART_COLORS[i % CHART_COLORS.length])
   const fill = area ?? series.length === 1
+  const shape = `${fill}|${series.map((s) => s.key).join(",")}`
 
+  const axis = React.useMemo(() => timeAxis(data.map((d) => d[index])), [data, index])
+  const axisRef = React.useRef(axis)
+  const fmtRef = React.useRef(valueFormatter)
+  axisRef.current = axis
+  fmtRef.current = valueFormatter
   const n = data.length
-  const values = data.flatMap((d) => series.map((s) => Number(d[s.key])))
-  const { lo, hi, ticks } = niceTicks(Math.min(0, ...values), Math.max(...values), 4)
-  const left = axisWidth(ticks.map(valueFormatter))
-  const right = 16
-  const top = 12
-  const bottom = 28
-  const plotW = Math.max(0, width - left - right)
-  const plotH = height - top - bottom
-  const xOf = (i: number) => left + (n === 1 ? plotW / 2 : (i / (n - 1)) * plotW)
-  const yOf = (v: number) => top + ((hi - v) / (hi - lo)) * plotH
-  const every = labelEvery(n, plotW)
+  const nRef = React.useRef(n)
+  nRef.current = n
+  const dataRef = React.useRef(data)
+  dataRef.current = data
+  const seriesRef = React.useRef(series)
+  seriesRef.current = series
+  const colorsRef = React.useRef(colors)
+  colorsRef.current = colors
 
-  function onMove(e: React.PointerEvent<SVGSVGElement>) {
-    const r = e.currentTarget.getBoundingClientRect()
-    const x = e.clientX - r.left - left
-    setActive(Math.min(n - 1, Math.max(0, Math.round((x / plotW) * (n - 1)))))
-  }
+  React.useLayoutEffect(() => {
+    const el = host.current
+    if (!el) return
+    const chart = createChart(el, {
+      ...baseOptions,
+      ...axisOptions(axisRef, fmtRef),
+      timeScale: { ...baseOptions.timeScale, ...axisOptions(axisRef, fmtRef).timeScale },
+      crosshair: { mode: CrosshairMode.Magnet, horzLine: { visible: false, labelVisible: false } },
+      leftPriceScale: { visible: true, borderVisible: false, scaleMargins: { top: 0.08, bottom: 0 } },
+      rightPriceScale: { visible: false },
+      handleScroll: false,
+      handleScale: false,
+    })
+    const common = {
+      priceScaleId: "left",
+      lineWidth: 2 as const,
+      priceLineVisible: false,
+      lastValueVisible: false,
+      crosshairMarkerRadius: 4.5,
+      crosshairMarkerBorderWidth: 2,
+      autoscaleInfoProvider: fromZero,
+    }
+    const made = seriesRef.current.map(() => (fill ? chart.addSeries(AreaSeries, common) : chart.addSeries(LineSeries, common)))
+    api.current = { chart, series: made }
+
+    // end markers and the tooltip frame are DOM, placed from the library's coordinates
+    let raf = 0
+    const measure = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        const rows = dataRef.current
+        const last = rows.length - 1
+        if (last < 0) return setDots([])
+        const left = chart.priceScale("left").width()
+        const x = chart.timeScale().timeToCoordinate(axisRef.current.times[last])
+        setFrame({ left, width: el.clientWidth, plotH: chart.paneSize().height })
+        setDots(
+          made.flatMap((s, i) => {
+            const y = s.priceToCoordinate(Number(rows[last][seriesRef.current[i].key]))
+            return x == null || y == null ? [] : [{ x: left + x, y, color: colorsRef.current[i] }]
+          })
+        )
+      })
+    }
+    const ts = chart.timeScale()
+    ts.subscribeVisibleLogicalRangeChange(measure)
+    ts.subscribeSizeChange(measure)
+    const onMove = (p: MouseEventParams) => {
+      if (p.time === undefined || p.logical === undefined || !p.point) return setActive(null)
+      setActive(Math.min(nRef.current - 1, Math.max(0, Math.round(p.logical))))
+    }
+    chart.subscribeCrosshairMove(onMove)
+    const unfit = fitOnResize(chart)
+    remeasure.current = measure
+    return () => {
+      cancelAnimationFrame(raf)
+      unfit()
+      ts.unsubscribeVisibleLogicalRangeChange(measure)
+      ts.unsubscribeSizeChange(measure)
+      chart.unsubscribeCrosshairMove(onMove)
+      remeasure.current = () => {}
+      api.current = null
+      chart.remove()
+    }
+  }, [shape]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  React.useLayoutEffect(() => {
+    const a = api.current
+    if (!a) return
+    a.series.forEach((s, i) => {
+      const key = series[i].key
+      s.setData(data.map((d, j) => ({ time: axis.times[j], value: Number(d[key]) })))
+    })
+    a.chart.timeScale().fitContent()
+    remeasure.current()
+  }, [data, axis, shape]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  React.useLayoutEffect(() => {
+    const a = api.current
+    const el = host.current
+    if (!a || !el) return
+    const th = readTheme(el)
+    a.chart.applyOptions(themeOptions(th))
+    a.chart.applyOptions({ crosshair: { horzLine: { visible: false, labelVisible: false } } })
+    a.series.forEach((s, i) => {
+      const c = th.color(colors[i])
+      const ring = { crosshairMarkerBackgroundColor: c, crosshairMarkerBorderColor: th.surface }
+      if (fill) {
+        const wash = th.color(colors[i], 0.1)
+        ;(s as ISeriesApi<"Area">).applyOptions({ lineColor: c, topColor: wash, bottomColor: wash, ...ring })
+      } else (s as ISeriesApi<"Line">).applyOptions({ color: c, ...ring })
+    })
+    remeasure.current()
+  }, [themeVersion, shape, colors.join()]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const keys = useCrosshairKeys(
+    n,
+    active,
+    setActive,
+    (i) => {
+      const a = api.current
+      if (a?.series[0]) a.chart.setCrosshairPosition(Number(data[i][series[0].key]), axis.times[i], a.series[0])
+    },
+    () => api.current?.chart.clearCrosshairPosition()
+  )
+
+  const activeX = active != null ? api.current?.chart.timeScale().timeToCoordinate(axis.times[active]) : null
 
   return (
     <div className={cn("relative w-full", className)}>
       {series.length > 1 && <ChartLegend className="mb-3" shape="line" items={series.map((s, i) => ({ name: s.name, color: colors[i] }))} />}
-      <div ref={ref} className="relative w-full" style={{ height }}>
-        {width > 0 && (
-          <svg
-            width={width}
-            height={height}
-            role="img"
-            aria-label={`${label}. Use the left and right arrow keys to read each point.`}
-            tabIndex={0}
-            className="block touch-pan-y rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            onPointerMove={onMove}
-            onPointerLeave={() => setActive(null)}
-            onKeyDown={(e) => keyNav(e, n, active, setActive)}
-          >
-            {ticks.map((t) => (
-              <g key={t}>
-                <line x1={left} x2={left + plotW} y1={yOf(t)} y2={yOf(t)} className="stroke-border" shapeRendering="crispEdges" />
-                <text x={left - 10} y={yOf(t)} dy="0.32em" textAnchor="end" className={axisText}>
-                  {valueFormatter(t)}
-                </text>
-              </g>
-            ))}
-            {data.map((d, i) =>
-              i % every === 0 || i === n - 1 ? (
-                <text key={i} x={xOf(i)} y={height - 8} textAnchor={i === 0 ? "start" : i === n - 1 ? "end" : "middle"} className={axisText}>
-                  {String(d[index])}
-                </text>
-              ) : null
-            )}
-            {series.map((s, si) => {
-              const pts = data.map((d, i) => [xOf(i), yOf(Number(d[s.key]))] as const)
-              const line = pts.map(([x, y], i) => `${i ? "L" : "M"}${x},${y}`).join("")
-              return (
-                <g key={s.key}>
-                  {fill && <path d={`${line}L${xOf(n - 1)},${yOf(lo)}L${xOf(0)},${yOf(lo)}Z`} fill={colors[si]} opacity={0.1} />}
-                  <path d={line} fill="none" stroke={colors[si]} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
-                </g>
-              )
-            })}
-            {/* end markers carry a 2px surface ring */}
-            {series.map((s, si) => (
-              <circle key={s.key} cx={xOf(n - 1)} cy={yOf(Number(data[n - 1][s.key]))} r={4} fill={colors[si]} className="stroke-card" strokeWidth={2} />
-            ))}
-            {active != null && (
-              <g pointerEvents="none">
-                <line x1={xOf(active)} x2={xOf(active)} y1={top} y2={top + plotH} className="stroke-muted-foreground" opacity={0.5} />
-                {series.map((s, si) => (
-                  <circle key={s.key} cx={xOf(active)} cy={yOf(Number(data[active][s.key]))} r={4.5} fill={colors[si]} className="stroke-card" strokeWidth={2} />
-                ))}
-              </g>
-            )}
-          </svg>
-        )}
-        {active != null && width > 0 && (
-          <ChartTooltip x={xOf(active)} y={top + plotH / 2} width={width}>
-            <div className="mb-1 text-muted-foreground">{String(data[active][index])}</div>
+      <div
+        role="group"
+        aria-roledescription="chart"
+        aria-label={`${label}. Use the left and right arrow keys to read each point.`}
+        tabIndex={0}
+        className={plotFocus}
+        style={{ height }}
+        onKeyDown={keys}
+        onBlur={() => {
+          setActive(null)
+          api.current?.chart.clearCrosshairPosition()
+        }}
+      >
+        <div ref={host} className="absolute inset-0" />
+        {/* end markers carry a 2px surface ring */}
+        {dots.map((d, i) => (
+          <span
+            key={i}
+            aria-hidden
+            className="pointer-events-none absolute z-[2] size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-card"
+            style={{ left: d.x, top: d.y, background: d.color, opacity: active != null && active !== n - 1 ? 0.5 : 1 }}
+          />
+        ))}
+        {active != null && activeX != null && frame.width > 0 && (
+          <ChartTooltip x={frame.left + activeX} y={frame.plotH / 2} width={frame.width}>
+            <div className="mb-1 text-muted-foreground">{axis.label(axis.times[active])}</div>
             {series.map((s, si) => (
               <TooltipRow key={s.key} color={colors[si]} name={s.name} value={valueFormatter(Number(data[active][s.key]))} />
             ))}
@@ -515,10 +768,15 @@ export function AreaChart({
       <SrTable
         caption={label}
         head={[index, ...series.map((s) => s.name)]}
-        rows={data.map((d) => [String(d[index]), ...series.map((s) => valueFormatter(Number(d[s.key])))])}
+        rows={data.map((d, i) => [axis.label(axis.times[i]), ...series.map((s) => valueFormatter(Number(d[s.key])))])}
       />
     </div>
   )
+}
+
+/** AreaChart without the fill: for several series that cross, or any trend where the baseline is not the point */
+export function LineChart(props: Omit<React.ComponentProps<typeof AreaChart>, "area">) {
+  return <AreaChart {...props} area={false} />
 }
 
 /* ------------------------------------------------------------------ */
